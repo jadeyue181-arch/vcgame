@@ -148,7 +148,8 @@
                             </div>
                         </div>
                         <div class="flex justify-end">
-                            <button onclick="switchPage(2)" class="px-8 py-3.5 bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white rounded-2xl font-black text-[16px] shadow-md hover:shadow-indigo-200 hover:scale-[1.02] active:scale-95 transition-all duration-200 flex items-center gap-2">
+                            <!-- Binding the iOS audio unlock here -->
+                            <button onclick="unlockAudioAndSwitchPage(2)" class="px-8 py-3.5 bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white rounded-2xl font-black text-[16px] shadow-md hover:shadow-indigo-200 hover:scale-[1.02] active:scale-95 transition-all duration-200 flex items-center gap-2">
                                 前往魔法酿造 <i data-lucide="sparkles" class="w-5 h-5"></i>
                             </button>
                         </div>
@@ -531,6 +532,38 @@
 
     <!-- AUDIO & LOGIC INTERACTS -->
     <script>
+        // --- 语音播放引擎 (全平台兼容优化) ---
+        let preferredVoice = null;
+        let audioUnlocked = false;
+
+        function initVoices() {
+            if (!('speechSynthesis' in window)) return;
+            let voices = window.speechSynthesis.getVoices();
+            if (voices.length > 0) {
+                preferredVoice = voices.find(v => v.name.includes('Samantha') || v.name.includes('Google US English') || v.name.includes('Zira')) 
+                              || voices.find(v => v.lang === 'en-US'); 
+            }
+        }
+        
+        if ('speechSynthesis' in window) {
+            initVoices();
+            if (window.speechSynthesis.onvoiceschanged !== undefined) {
+                window.speechSynthesis.onvoiceschanged = initVoices;
+            }
+        }
+
+        // iOS 音频锁定破解
+        function unlockAudioAndSwitchPage(pageId) {
+            if (!audioUnlocked && 'speechSynthesis' in window) {
+                const silentUtterance = new SpeechSynthesisUtterance(" ");
+                silentUtterance.volume = 0;
+                silentUtterance.rate = 10;
+                window.speechSynthesis.speak(silentUtterance);
+                audioUnlocked = true;
+            }
+            switchPage(pageId);
+        }
+
         // --- GAME STATE VARIABLES ---
         let currentPage = 1;
         const maxCapacity = { 5: 5, 3: 3 };
@@ -554,14 +587,17 @@
         let selectedChinese = null;
         let matchedPairs = [];
 
-        // TTS Pronunciation function using Web Speech API
+        // TTS Pronunciation function using Web Speech API (带中文拦截机制)
         function speakWord(wordText) {
             if ('speechSynthesis' in window) {
-                // Cancel previous speech to prevent overlap queues
                 window.speechSynthesis.cancel();
+                // 如果包含中文字符，则拦截静音
+                if (/[\u4e00-\u9fa5]/.test(wordText)) return; 
+                
                 const utterance = new SpeechSynthesisUtterance(wordText);
                 utterance.lang = 'en-US';
-                utterance.rate = 0.85; // Slightly slower for clear learning
+                utterance.rate = 0.85; 
+                if (preferredVoice) utterance.voice = preferredVoice;
                 window.speechSynthesis.speak(utterance);
             }
         }
@@ -902,7 +938,9 @@
             initVocabularyGame();
         };
     </script>
-<div onclick="window.location.href='index.html';" style="position: fixed; bottom: 24px; right: 24px; z-index: 2147483647; background: white; border: 4px solid #8b5cf6; color: #6d28d9; font-family: 'Noto Sans SC', sans-serif; font-weight: 900; font-size: 16px; padding: 12px 24px; border-radius: 50px; box-shadow: 0 10px 25px rgba(139,92,246,0.3); transition: transform 0.2s; cursor: pointer; pointer-events: auto;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+
+    <!-- 专属返回大厅按钮 -->
+    <div onclick="window.location.href='index.html';" style="position: fixed; bottom: 24px; right: 24px; z-index: 2147483647; background: white; border: 4px solid #8b5cf6; color: #6d28d9; font-family: 'Noto Sans SC', sans-serif; font-weight: 900; font-size: 16px; padding: 12px 24px; border-radius: 50px; box-shadow: 0 10px 25px rgba(139,92,246,0.3); transition: transform 0.2s; cursor: pointer; pointer-events: auto;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
         🏠 返回选关大厅
     </div>
 </body>
