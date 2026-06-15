@@ -133,7 +133,8 @@
                 </div>
 
                 <div class="mt-10 flex justify-center">
-                    <button onclick="switchStage('logic')" class="jelly-btn group flex items-center px-12 py-5 font-black text-white bg-green-500 hover:bg-green-400 rounded-full text-2xl shadow-[0_8px_0_rgb(21,128,61)] border-b-2 border-green-300">
+                    <!-- iOS 音频解锁：绑定在此次用户真实点击上 -->
+                    <button onclick="unlockAudioAndGoToLogic()" class="jelly-btn group flex items-center px-12 py-5 font-black text-white bg-green-500 hover:bg-green-400 rounded-full text-2xl shadow-[0_8px_0_rgb(21,128,61)] border-b-2 border-green-300">
                         去帮小熊推木块 
                         <svg class="w-8 h-8 ml-2 group-hover:translate-x-2 transition-transform" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
@@ -180,15 +181,9 @@
                     <div class="bg-amber-50 border-2 border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs md:text-sm font-bold shadow flex-1">
                         💡 把小熊正下方的障碍物拨开吧！
                     </div>
-                    <!-- 看答案自动演示按钮 -->
-                    <button onclick="showLogicAnswer()" class="jelly-btn flex items-center justify-center px-4 py-3 bg-white text-emerald-500 rounded-xl shadow-lg border-4 border-emerald-100 hover:bg-emerald-50 shrink-0 group">
-                        <span class="font-black group-active:scale-95 transition-transform">👀 答案</span>
-                    </button>
                     <!-- 刷新重置按钮 -->
-                    <button onclick="resetLogicGame()" class="jelly-btn flex items-center justify-center p-3 bg-white text-rose-500 rounded-xl shadow-lg border-4 border-rose-100 hover:bg-rose-50 shrink-0">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 8H17.5"></path>
-                        </svg>
+                    <button onclick="resetLogicGame()" class="jelly-btn flex items-center justify-center px-4 py-3 bg-white text-rose-500 rounded-xl shadow-lg border-4 border-rose-100 hover:bg-rose-50 shrink-0 group">
+                        <span class="font-black group-active:scale-95 transition-transform">🔄 重置</span>
                     </button>
                 </div>
             </div>
@@ -321,6 +316,67 @@
         const STAGES = { STORY: 0, LOGIC: 1, QUIZ: 2, SUCCESS: 3 };
         let currentStageState = STAGES.STORY;
 
+        // --- 全平台高质量语音与移动端解锁机制 ---
+        let preferredVoice = null;
+        let audioUnlocked = false;
+
+        function initVoices() {
+            if (!('speechSynthesis' in window)) return;
+            let voices = window.speechSynthesis.getVoices();
+            if (voices.length > 0) {
+                // 优先选取高质量的女声发音
+                preferredVoice = voices.find(v => v.name.includes('Samantha') || v.name.includes('Google US English') || v.name.includes('Zira')) 
+                              || voices.find(v => v.lang === 'en-US'); 
+            }
+        }
+        
+        if ('speechSynthesis' in window) {
+            initVoices();
+            if (window.speechSynthesis.onvoiceschanged !== undefined) {
+                window.speechSynthesis.onvoiceschanged = initVoices;
+            }
+        }
+
+        // 绑定在第一页“去帮小熊推木块”上的触发器，解决 iOS 的静默问题
+        function unlockAudioAndGoToLogic() {
+            if (!audioUnlocked && 'speechSynthesis' in window) {
+                const silentUtterance = new SpeechSynthesisUtterance(" ");
+                silentUtterance.volume = 0;
+                silentUtterance.rate = 10;
+                window.speechSynthesis.speak(silentUtterance);
+                audioUnlocked = true;
+            }
+            switchStage('logic');
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.innerText = message;
+            toast.classList.remove('opacity-0', 'pointer-events-none');
+            toast.classList.add('opacity-100', 'translate-y-[-10px]');
+            setTimeout(() => {
+                toast.classList.remove('opacity-100', 'translate-y-[-10px]');
+                toast.classList.add('opacity-0', 'pointer-events-none');
+            }, 2500);
+        }
+
+        window.speakWord = function(word) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                // 智能识别：如果是中文则拦截静音
+                if (/[\u4e00-\u9fa5]/.test(word)) return; 
+                
+                const utterance = new SpeechSynthesisUtterance(word);
+                utterance.lang = 'en-US';
+                utterance.rate = 0.85;  
+                utterance.pitch = 1.2; 
+                if (preferredVoice) utterance.voice = preferredVoice;
+                window.speechSynthesis.speak(utterance);
+            } else {
+                showToast("设备不支持语音朗读");
+            }
+        }
+
         // 第二关：严格恢复早期的 6 积木华容道经典布局
         const LOGIC_INITIAL_BLOCKS = [
             { id: 'hero', w: 2, h: 2, x: 1, y: 0, type: 'hero', color: 'bg-gradient-to-b from-amber-200 to-amber-400 border border-amber-300 text-amber-900', content: '🐻 BEAR' },
@@ -436,30 +492,6 @@
             else if (currentStageState === STAGES.QUIZ) switchStage('logic');
         }
 
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            toast.innerText = message;
-            toast.classList.remove('opacity-0', 'pointer-events-none');
-            toast.classList.add('opacity-100', 'translate-y-[-10px]');
-            setTimeout(() => {
-                toast.classList.remove('opacity-100', 'translate-y-[-10px]');
-                toast.classList.add('opacity-0', 'pointer-events-none');
-            }, 2500);
-        }
-
-        window.speakWord = function(word) {
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel();
-                const utterance = new SpeechSynthesisUtterance(word);
-                utterance.lang = 'en-US';
-                utterance.rate = 0.85;  
-                utterance.pitch = 1.2; 
-                window.speechSynthesis.speak(utterance);
-            } else {
-                showToast("设备不支持语音朗读");
-            }
-        }
-
         // --- 第二关：完美匹配的网格系统与严格物理碰撞 ---
         function resetLogicGame() {
             if (autoPlayTimer) clearInterval(autoPlayTimer);
@@ -520,44 +552,6 @@
                     checkVictory();
                 }
             }
-        }
-
-        // 全新录制的 15 步自动解谜连招 (完美破解经典的6块阵)
-        function showLogicAnswer() {
-            if (isAutoPlaying || gameFinished) return;
-            resetLogicGame(); 
-            isAutoPlaying = true;
-            showToast("正在自动演示完美通关步骤...");
-
-            const autoSteps = [
-                {id: 's1', dx: 0, dy: 1}, {id: 's1', dx: 0, dy: 1},
-                {id: 's2', dx: 0, dy: 1}, {id: 's2', dx: -1, dy: 0}, {id: 's2', dx: 0, dy: 1},
-                {id: 'v1', dx: 0, dy: 1}, {id: 'v1', dx: 0, dy: 1},
-                {id: 'v2', dx: 0, dy: 1}, {id: 'v2', dx: 0, dy: 1}, {id: 'v2', dx: 0, dy: 1},
-                {id: 'hero', dx: -1, dy: 0},
-                {id: 'h1', dx: 1, dy: 0}, {id: 'h1', dx: 0, dy: -1}, {id: 'h1', dx: 0, dy: -1},
-                {id: 'v2', dx: 0, dy: -1}, {id: 'v2', dx: 0, dy: -1},
-                {id: 's2', dx: 1, dy: 0},
-                {id: 'v1', dx: 1, dy: 0}, {id: 'v1', dx: 1, dy: 0},
-                {id: 'hero', dx: 0, dy: 1}, {id: 'hero', dx: 0, dy: 1},
-                {id: 'h1', dx: -1, dy: 0}, {id: 'h1', dx: -1, dy: 0},
-                {id: 'v2', dx: 0, dy: -1},
-                {id: 'v1', dx: 0, dy: -1}, {id: 'v1', dx: 0, dy: -1},
-                {id: 'hero', dx: 1, dy: 0},
-                {id: 'hero', dx: 0, dy: 1}
-            ];
-
-            let stepIdx = 0;
-            autoPlayTimer = setInterval(() => {
-                if (stepIdx < autoSteps.length) {
-                    const step = autoSteps[stepIdx];
-                    attemptMove(step.id, step.dx, step.dy);
-                    stepIdx++;
-                } else {
-                    clearInterval(autoPlayTimer);
-                    isAutoPlaying = false;
-                }
-            }, 400); 
         }
 
         // 按步数分级夸奖
@@ -742,7 +736,9 @@
 
         window.onload = () => switchStage('story');
     </script>
-<div onclick="window.location.href='index.html';" style="position: fixed; bottom: 24px; right: 24px; z-index: 2147483647; background: white; border: 4px solid #8b5cf6; color: #6d28d9; font-family: 'Noto Sans SC', sans-serif; font-weight: 900; font-size: 16px; padding: 12px 24px; border-radius: 50px; box-shadow: 0 10px 25px rgba(139,92,246,0.3); transition: transform 0.2s; cursor: pointer; pointer-events: auto;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+    
+    <!-- 专属返回大厅按钮 -->
+    <div onclick="window.location.href='index.html';" style="position: fixed; bottom: 24px; right: 24px; z-index: 2147483647; background: white; border: 4px solid #8b5cf6; color: #6d28d9; font-family: 'Noto Sans SC', sans-serif; font-weight: 900; font-size: 16px; padding: 12px 24px; border-radius: 50px; box-shadow: 0 10px 25px rgba(139,92,246,0.3); transition: transform 0.2s; cursor: pointer; pointer-events: auto;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
         🏠 返回选关大厅
     </div>
 </body>
