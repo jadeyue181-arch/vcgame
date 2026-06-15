@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>第五关：小熊与神奇能量环</title>
+    <!-- 引入 Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Nunito:wght@400;700;900&display=swap');
+        
+        body {
+            /* 多巴胺圆润字体 */
+            font-family: 'Nunito', 'ZCOOL KuaiLe', system-ui, -apple-system, sans-serif;
+            background-color: #fdf4ff; 
+            color: #334155;
+            user-select: none;
+            -webkit-user-select: none;
+            overflow-x: hidden;
+        }
+
+        /* ---------------- 背景多巴胺气泡动画 ---------------- */
+        @keyframes float-blob {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-20px) scale(1.05); }
+        }
+        .blob {
+            position: absolute;
+            filter: blur(60px);
+            opacity: 0.6;
+            animation: float-blob 6s ease-in-out infinite;
+            z-index: 0;
+        }
+
+        /* ---------------- 3D 多巴胺糖果按钮 ---------------- */
+        .candy-btn {
+            transition: all 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .candy-btn:active:not(:disabled) {
+            transform: translateY(4px);
+            border-bottom-width: 0px !important;
+            margin-bottom: 4px; 
+        }
+        .candy-btn:disabled { filter: grayscale(80%); opacity: 0.6; cursor: not-allowed; }
+
+        /* ---------------- 点读卡片交互 ---------------- */
+        .word-tag {
+            background: #ffffff;
+            border: 2px solid #e2e8f0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .word-tag:active { transform: scale(0.92); box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+
+        /* ---------------- 汉诺塔 3D 糖果圆盘 ---------------- */
+        .disk {
+            transition: bottom 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+                        left 0.3s ease, transform 0.3s ease;
+            box-shadow: inset 0 4px 0 rgba(255,255,255,0.4), 0 6px 0 rgba(0,0,0,0.1);
+        }
+        
+        .disk.selected {
+            transform: translateX(-50%) translateY(-12px) !important;
+            filter: brightness(1.1);
+            box-shadow: inset 0 4px 0 rgba(255,255,255,0.6), 0 15px 15px rgba(0,0,0,0.15);
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-6px); }
+            40%, 80% { transform: translateX(6px); }
+        }
+        .shake-err { animation: shake 0.4s ease-in-out; }
+
+        /* ---------------- 明亮的磨砂玻璃面板 ---------------- */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 4px solid #ffffff;
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-between p-4 relative">
+
+    <!-- 梦幻多巴胺渐变气泡底图 -->
+    <div class="fixed inset-0 pointer-events-none overflow-hidden">
+        <div class="blob bg-pink-300 w-[500px] h-[500px] rounded-full top-[-100px] left-[-100px]"></div>
+        <div class="blob bg-yellow-300 w-[400px] h-[400px] rounded-full bottom-[10%] right-[-50px]" style="animation-delay: 1s;"></div>
+        <div class="blob bg-cyan-300 w-[600px] h-[600px] rounded-full top-[20%] left-[30%]" style="animation-delay: 2s; opacity: 0.4;"></div>
+        <div class="blob bg-purple-300 w-[300px] h-[300px] rounded-full bottom-[-50px] left-[10%]" style="animation-delay: 1.5s;"></div>
+    </div>
+
+    <!-- 顶部状态栏 -->
+    <header class="w-full max-w-3xl flex items-center justify-between z-10 py-2.5 px-6 glass-panel rounded-3xl mb-3 mt-2">
+        <div class="flex items-center space-x-3">
+            <span class="text-4xl animate-bounce" style="animation-duration: 3s;">🐻</span>
+            <span class="text-2xl md:text-3xl font-black tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-rose-500 to-orange-500 drop-shadow-sm">
+                第五关：彩虹星环塔
+            </span>
+        </div>
+        <div class="flex items-center space-x-2 bg-gradient-to-r from-rose-400 to-pink-500 border-4 border-white rounded-full px-5 py-1.5 font-black text-white shadow-md">
+            <span>🏆</span>
+            <span class="text-lg">Level 5</span>
+        </div>
+    </header>
+
+    <!-- 核心舞台 (缩小宽度为 max-w-3xl) -->
+    <main class="w-full max-w-3xl flex-grow flex items-center justify-center z-10 mb-20">
+        
+        <!-- ==================== 第一关：史诗绘本 ==================== -->
+        <section id="stage-story" class="w-full">
+            <div class="glass-panel p-5 md:p-8 rounded-[2.5rem] relative overflow-hidden">
+                <!-- 装饰 -->
+                <div class="absolute top-4 right-4 text-5xl opacity-30 animate-pulse">🌈</div>
+
+                <div class="flex items-center space-x-3 mb-4 border-b-2 border-dashed border-rose-100 pb-3">
+                    <div class="w-10 h-10 bg-rose-100 text-rose-500 rounded-xl flex items-center justify-center border-2 border-white shadow-md">
+                        <span class="text-2xl">✨</span>
+                    </div>
+                    <h2 class="text-2xl md:text-3xl font-black text-slate-800 tracking-wide">小熊与神奇能量环</h2>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-center">
+                    <!-- 左侧视觉 -->
+                    <div class="lg:col-span-4 flex flex-col items-center justify-center bg-white/50 rounded-[1.5rem] border-4 border-dashed border-rose-200 p-4 relative shadow-inner">
+                        <div class="relative w-32 h-32 flex items-center justify-center">
+                            <span class="absolute text-[5rem] filter drop-shadow-lg">🏛️</span>
+                            <span class="absolute bottom-[-5px] right-[-5px] text-[2.5rem] drop-shadow-lg z-10">🐻</span>
+                        </div>
+                        <div class="mt-3 text-rose-600 bg-rose-50 px-4 py-1.5 rounded-full border-2 border-rose-200 font-extrabold text-xs tracking-wide shadow-sm text-center">
+                            💡 点击彩色单词听发音
+                        </div>
+                    </div>
+
+                    <!-- 右侧文本区 -->
+                    <div class="lg:col-span-8 space-y-3 text-[1.05rem] md:text-[1.15rem] text-slate-700 font-bold leading-relaxed">
+                        <p class="indent-6">
+                            小熊 
+                            <button onclick="speakWord('Bear')" class="word-tag inline-flex items-center justify-center gap-1 align-middle px-2.5 py-0.5 mx-1 rounded-lg text-amber-600 -translate-y-[2px]">
+                                <span class="text-lg leading-none">🐻</span><span class="font-black leading-none mt-0.5">Bear</span>
+                            </button> 
+                            来到了一座传说中的彩虹神殿 
+                            <button onclick="speakWord('Temple')" class="word-card inline-flex items-center justify-center gap-1 align-middle px-2.5 py-0.5 mx-1 bg-white border-2 border-slate-200 rounded-lg text-purple-600 shadow-sm -translate-y-[2px]">
+                                <span class="text-lg leading-none">🏛️</span><span class="font-black leading-none mt-0.5">Temple</span>
+                            </button>。
+                        </p>
+                        
+                        <p class="indent-6">
+                            神殿中央有三根大柱子。第一根柱子上，叠放着四个非常漂亮的糖果能量环 
+                            <button onclick="speakWord('Ring')" class="word-card inline-flex items-center justify-center gap-1 align-middle px-2.5 py-0.5 mx-1 bg-white border-2 border-slate-200 rounded-lg text-cyan-600 shadow-sm -translate-y-[2px]">
+                                <span class="text-lg leading-none">⭕</span><span class="font-black leading-none mt-0.5">Ring</span>
+                            </button>。
+                        </p>
+
+                        <p class="indent-6">
+                            守护者告诉小熊：必须把四个能量环全部转移到 <strong class="text-rose-500 underline decoration-wavy decoration-rose-300">最右侧</strong> 的第三根柱子上。但是，这里有一条极其严格的魔法 
+                            <button onclick="speakWord('Magic')" class="word-card inline-flex items-center justify-center gap-1 align-middle px-2.5 py-0.5 mx-1 bg-white border-2 border-slate-200 rounded-lg text-pink-600 shadow-sm -translate-y-[2px]">
+                                <span class="text-lg leading-none">✨</span><span class="font-black leading-none mt-0.5">Magic</span>
+                            </button> 
+                            法则：<br>
+                            <span class="block mt-2.5 p-2.5 bg-rose-50 border-2 border-rose-200 rounded-xl text-rose-600 font-black text-base text-center shadow-inner">
+                                ⚠️ 任何时候，大圆环都绝对不能压在小圆环上面！
+                            </span>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="mt-6 flex justify-center">
+                    <button onclick="switchStage('logic')" class="candy-btn px-10 py-3.5 font-black text-white bg-rose-500 border-b-[5px] border-rose-600 rounded-full text-xl tracking-widest flex items-center group shadow-[0_8px_15px_rgba(244,63,94,0.3)] hover:bg-rose-400">
+                        接受魔法试炼
+                        <svg class="w-6 h-6 ml-2 group-hover:translate-x-1.5 transition-transform" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 5l7 7-7 7M5 5l7 7-7 7"></path></svg>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ==================== 第二关：神殿汉诺塔 ==================== -->
+        <section id="stage-logic" class="w-full hidden">
+            <div class="flex flex-col items-center w-full">
+                
+                <!-- 顶部计分板 -->
+                <div class="glass-panel w-full max-w-2xl px-6 py-4 rounded-[2rem] mb-6 flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div class="flex items-center space-x-3 text-rose-600 font-black text-xl tracking-wide">
+                        <span class="text-2xl">⭕</span>
+                        <h2>移动彩虹环</h2>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <div class="bg-rose-50 px-4 py-2 rounded-xl text-rose-800 font-bold border-2 border-rose-200 shadow-sm">
+                            目标: <span class="text-emerald-500 mx-1 text-lg font-black">15</span> 步
+                        </div>
+                        <div class="bg-rose-50 px-4 py-2 rounded-xl text-rose-800 font-bold border-2 border-rose-200 shadow-sm">
+                            已走: <span id="steps-counter" class="text-rose-600 mx-1 text-lg font-black">0</span> 步
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 汉诺塔物理交互区 (修复了百分百居中与贴合对齐) -->
+                <div class="w-full max-w-[700px] aspect-[4/3] md:aspect-[2/1] bg-white/60 backdrop-blur-xl rounded-[2.5rem] border-[6px] border-white/80 shadow-[0_15px_40px_rgba(0,0,0,0.08)] overflow-hidden flex items-center justify-center">
+                    
+                    <!-- 内部严密对齐容器 -->
+                    <div class="relative w-full h-full flex items-end">
+                        <div class="absolute inset-0 opacity-20 pointer-events-none" style="background-image: linear-gradient(#e2e8f0 2px, transparent 2px); background-size: 100% 20%;"></div>
+
+                        <!-- 3根柱子 -->
+                        <div class="relative w-1/3 h-full flex justify-center cursor-pointer group" onclick="handlePillarClick(0)">
+                            <div class="absolute bottom-[16%] w-[18px] md:w-[24px] h-[75%] bg-slate-200 rounded-t-full border-2 border-white shadow-inner group-hover:bg-rose-200 transition-colors z-0"></div>
+                            <div class="absolute bottom-[12%] w-[80%] max-w-[140px] h-[6%] bg-white border-b-[4px] border-slate-200 rounded-[50%] shadow-sm z-0"></div>
+                            <div class="absolute bottom-[2%] text-slate-500 font-black tracking-widest text-sm md:text-base px-4 py-1 bg-white/80 rounded-full shadow-sm border border-slate-100">起点</div>
+                        </div>
+
+                        <div class="relative w-1/3 h-full flex justify-center cursor-pointer group" onclick="handlePillarClick(1)">
+                            <div class="absolute bottom-[16%] w-[18px] md:w-[24px] h-[75%] bg-slate-200 rounded-t-full border-2 border-white shadow-inner group-hover:bg-amber-200 transition-colors z-0"></div>
+                            <div class="absolute bottom-[12%] w-[80%] max-w-[140px] h-[6%] bg-white border-b-[4px] border-slate-200 rounded-[50%] shadow-sm z-0"></div>
+                            <div class="absolute bottom-[2%] text-slate-500 font-black tracking-widest text-sm md:text-base px-4 py-1 bg-white/80 rounded-full shadow-sm border border-slate-100">中转</div>
+                        </div>
+
+                        <div class="relative w-1/3 h-full flex justify-center cursor-pointer group" onclick="handlePillarClick(2)">
+                            <div class="absolute bottom-[16%] w-[18px] md:w-[24px] h-[75%] bg-emerald-200 rounded-t-full border-2 border-white shadow-[0_0_15px_rgba(16,185,129,0.4)] transition-colors z-0 group-hover:bg-emerald-300"></div>
+                            <div class="absolute bottom-[12%] w-[80%] max-w-[140px] h-[6%] bg-emerald-50 border-b-[4px] border-emerald-200 rounded-[50%] shadow-sm z-0"></div>
+                            <div class="absolute bottom-[2%] text-emerald-600 font-black tracking-widest text-sm md:text-base px-4 py-1 bg-emerald-50 rounded-full shadow-sm border border-emerald-200">终点</div>
+                        </div>
+
+                        <!-- 动态盘子容器 -->
+                        <div id="disks-layer" class="absolute inset-0 pointer-events-none z-10"></div>
+                    </div>
+                </div>
+
+                <!-- 底部操作提示与重置 (升级更美观的多巴胺提示区) -->
+                <div class="flex flex-col md:flex-row items-center justify-between gap-4 mt-6 w-full max-w-[700px]">
+                    <div class="bg-white/90 backdrop-blur-md border-[3px] border-amber-100 text-slate-600 px-5 py-3.5 rounded-2xl text-sm md:text-base font-bold shadow-sm flex-1 flex justify-between items-center">
+                        <span>👆 玩法：<span class="text-rose-500">点击选中</span>星环，再<span class="text-rose-500">点击柱子</span>放下。</span>
+                        <button onclick="showHanoiHint()" class="candy-btn bg-gradient-to-r from-amber-300 to-orange-400 text-white px-5 py-2 rounded-xl font-black border-b-[3px] border-orange-500 shadow-md ml-2 tracking-widest flex items-center">
+                            <span class="mr-1">💡</span> 秘籍
+                        </button>
+                    </div>
+                    <button onclick="resetHanoi()" class="candy-btn flex items-center justify-center px-6 py-4 bg-white text-rose-500 border-b-[4px] border-slate-200 rounded-2xl hover:bg-slate-50 font-black tracking-widest shadow-sm">
+                        🔄 重新挑战
+                    </button>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ==================== 第三关：神殿问答 ==================== -->
+        <section id="stage-quiz" class="w-full hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+                
+                <!-- 左分栏：重写的线索卷轴 -->
+                <div class="lg:col-span-4 glass-panel p-6 rounded-[2rem] flex flex-col">
+                    <div class="flex items-center space-x-3 border-b-2 border-slate-100 pb-3 mb-5">
+                        <span class="text-2xl">📜</span>
+                        <h3 class="text-xl font-black text-slate-700 tracking-wide">神殿解密卷轴</h3>
+                    </div>
+                    <div class="space-y-4 text-base text-slate-600 font-bold leading-relaxed">
+                        <p class="bg-purple-50 p-3 rounded-xl border border-purple-100">
+                            1. 小熊来到了彩虹神殿 <span class="text-purple-600 font-black">Temple</span>。
+                        </p>
+                        <p class="bg-cyan-50 p-3 rounded-xl border border-cyan-100">
+                            2. 神殿中央的柱子上，叠放着 4 个漂亮的能量环 <span class="text-cyan-600 font-black">Ring</span>。
+                        </p>
+                        <p class="bg-amber-50 p-3 rounded-xl border border-amber-100">
+                            3. 任务是把所有的能量环，转移到 <span class="text-rose-500 font-black">最右侧的第三根柱子</span> 上。
+                        </p>
+                        <p class="bg-rose-50 p-3 rounded-xl border border-rose-100 text-rose-800">
+                            4. 最严的魔法 <span class="text-pink-600 font-black">Magic</span> 法则：大环绝不能压在小环上面！
+                        </p>
+                    </div>
+                </div>
+
+                <!-- 右分栏：答题 (加大阅读题占比，移除Emoji答案) -->
+                <div class="lg:col-span-8 glass-panel p-6 md:p-8 rounded-[2rem] flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-6 border-b-2 border-slate-100 pb-4">
+                            <h2 class="text-xl md:text-2xl font-black text-rose-500 flex items-center space-x-2 tracking-wide">
+                                <span>✨</span>
+                                <span>智慧题卡板 (自动发音)</span>
+                            </h2>
+                            <div id="quiz-progress" class="bg-rose-100 text-rose-600 px-4 py-1.5 rounded-full font-black border-2 border-rose-200 text-sm">
+                                1 / 6
+                            </div>
+                        </div>
+
+                        <div class="mb-6 min-h-[60px] flex items-center">
+                            <h3 id="question-text" class="text-lg md:text-xl text-slate-800 font-black leading-relaxed">
+                                加载问题中...
+                            </h3>
+                        </div>
+
+                        <!-- 答案选项列表 -->
+                        <div id="quiz-options" class="space-y-4">
+                            <!-- JS动态生成 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ==================== 终点：通关结算 ==================== -->
+        <section id="stage-success" class="w-full hidden">
+            <div class="glass-panel border-4 border-white p-8 md:p-14 rounded-[3rem] text-center relative overflow-hidden flex flex-col items-center">
+                <div class="absolute top-4 left-[20%] text-4xl opacity-50 animate-bounce">🎊</div>
+                <div class="absolute top-10 right-[20%] text-5xl opacity-40 animate-pulse">🎉</div>
+
+                <div id="stars-row" class="flex justify-center gap-4 mb-8 z-10"></div>
+                
+                <h1 class="text-4xl md:text-5xl font-black text-rose-500 mb-4 tracking-wider drop-shadow-sm z-10">
+                    大考完美收官！
+                </h1>
+                
+                <p class="text-slate-600 text-lg md:text-xl font-bold leading-relaxed mb-10 z-10">
+                    你拥有令人惊叹的递归逻辑思维！<br>
+                    这可是世界上最难的古老谜题之一。<br>
+                    <span class="text-amber-500 font-black text-2xl mt-3 block">荣获 “星空大智者” 勋章 🏅</span>
+                </p>
+                
+                <button onclick="restartFullAdventure()" class="candy-btn px-12 py-5 font-black text-white text-xl bg-cyan-500 border-b-[6px] border-cyan-600 rounded-full z-10 tracking-widest shadow-lg hover:bg-cyan-400">
+                    重温第五关 🔄
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- 底部进度条 -->
+    <footer id="progress-bar-container" class="fixed bottom-0 left-0 right-0 w-full bg-white/80 backdrop-blur-md px-6 py-3 shadow-[0_-10px_30px_rgba(0,0,0,0.03)] border-t-2 border-white z-50 flex items-center justify-between">
+        <div class="w-24 md:w-32">
+            <button id="btn-prev-stage" onclick="goPrevStage()" class="hidden candy-btn bg-slate-100 border-b-4 border-slate-200 text-slate-600 px-4 py-2 rounded-full text-sm font-black transition-all flex items-center gap-1">
+                <span>⬅️</span> <span class="hidden sm:inline">返回</span>
+            </button>
+        </div>
+        
+        <div class="flex items-center space-x-3 justify-center">
+            <div id="dot-story" class="h-3 w-10 bg-rose-400 rounded-full shadow-sm transition-all duration-300"></div>
+            <div id="dot-logic" class="h-3 w-3 bg-slate-200 rounded-full transition-all duration-300"></div>
+            <div id="dot-quiz" class="h-3 w-3 bg-slate-200 rounded-full transition-all duration-300"></div>
+        </div>
+
+        <div class="w-24 md:w-32 text-right">
+            <span class="font-black text-slate-500 text-xs md:text-sm tracking-widest hidden sm:inline">大考进度</span>
+        </div>
+    </footer>
+
+    <!-- 吐司提示 -->
+    <div id="toast" class="fixed top-24 left-1/2 transform -translate-x-1/2 bg-slate-800/90 text-white font-black tracking-wide px-6 py-3 rounded-2xl shadow-2xl z-50 text-center opacity-0 pointer-events-none transition-all duration-300 border border-white/20 text-base md:text-lg">
+        提示内容
+    </div>
+
+    <!-- 汉诺塔胜利弹窗 -->
+    <div id="logic-win-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+        <div class="bg-white border-8 border-emerald-400 p-8 rounded-[2.5rem] shadow-2xl flex flex-col items-center text-center max-w-sm mx-4 transform scale-90 transition-all duration-300">
+            <div class="text-[5rem] mb-4 animate-bounce">✨</div>
+            <h3 class="text-3xl font-black text-emerald-500 mb-4 tracking-widest" id="win-speech-text">天才的智慧！</h3>
+            <p class="text-slate-600 mb-8 text-base font-bold leading-relaxed">
+                你完美解开了古老的汉诺塔谜题！<br>
+                守护者对你的逻辑推演能力心服口服。<br>
+                接下来，解开最后的智慧卷轴吧！
+            </p>
+            <div class="flex flex-col gap-3 w-full">
+                <button onclick="goToQuizStage()" class="candy-btn w-full py-4 px-6 bg-rose-500 border-b-[4px] border-rose-600 rounded-full font-black text-white text-lg tracking-widest flex items-center justify-center">
+                    解开卷轴 👉
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 汉诺塔通关秘籍弹窗 (高颜值重构) -->
+    <div id="hint-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+        <div class="bg-white border-8 border-amber-300 p-8 md:p-10 rounded-[2.5rem] shadow-2xl flex flex-col items-center max-w-sm mx-4 transform transition-all duration-300 relative">
+            <div class="absolute -top-12 left-1/2 transform -translate-x-1/2 text-[5rem] drop-shadow-lg animate-bounce">💡</div>
+            <h3 class="text-3xl font-black text-amber-500 mb-6 mt-4 tracking-widest">通关秘籍</h3>
+            <div class="bg-amber-50 border-4 border-dashed border-amber-200 p-5 rounded-2xl mb-8 text-slate-700 font-bold text-base md:text-lg leading-loose w-full">
+                <p class="mb-2">1️⃣ 先把最小的 <span class="text-cyan-500 font-black text-xl">Sky</span> 放最右边。</p>
+                <p class="mb-2">2️⃣ 把 <span class="text-emerald-500 font-black text-xl">Sun</span> 放到中间。</p>
+                <p>3️⃣ 再把 <span class="text-cyan-500 font-black text-xl">Sky</span> 叠到 <span class="text-emerald-500 font-black">Sun</span> 上面！</p>
+            </div>
+            <button onclick="closeHanoiHint()" class="candy-btn w-full py-4 px-6 bg-rose-400 border-b-[4px] border-rose-500 rounded-full font-black text-white text-xl tracking-widest flex items-center justify-center">
+                我明白啦！
+            </button>
+        </div>
+    </div>
+
+
+    <script>
+        const STAGES = { STORY: 0, LOGIC: 1, QUIZ: 2, SUCCESS: 3 };
+        let currentStageState = STAGES.STORY;
+
+        const INITIAL_HANOI = [ [4, 3, 2, 1], [], [] ];
+        let hanoiState = [];
+        let selectedPillar = null; 
+        let steps = 0;
+        let gameFinished = false;
+
+        const DISK_STYLES = {
+            4: { width: '80%', color: 'bg-pink-500 border-b-4 border-pink-600 text-white', text: 'STAR 🌟', speakText: 'Star' },
+            3: { width: '65%', color: 'bg-amber-400 border-b-4 border-amber-500 text-white', text: 'MOON 🌙', speakText: 'Moon' },
+            2: { width: '50%', color: 'bg-emerald-400 border-b-4 border-emerald-500 text-white', text: 'SUN ☀️', speakText: 'Sun' },
+            1: { width: '35%', color: 'bg-cyan-400 border-b-4 border-cyan-500 text-white', text: 'SKY ☁️', speakText: 'Sky' }
+        };
+
+        // 题库升级：更多阅读题，移除Emoji选项，自然语言朗读
+        const QUIZ_QUESTIONS = [
+            {
+                type: "reading",
+                question: "【阅读理解】小熊在彩虹神殿里，发现了叠放着什么的柱子？",
+                options: ["漂亮的能量环", "红色的魔法苹果", "沉重的宝箱"],
+                answer: 0
+            },
+            {
+                type: "reading",
+                question: "【阅读理解】神殿守护者定下的最严格的“魔法法则”是什么？",
+                options: ["大环绝对不能压在小环上面", "只能用单手搬运圆环", "小环绝对不能压在大环上面"],
+                answer: 0
+            },
+            {
+                type: "reading",
+                question: "【阅读理解】小熊要把这 4 个能量环，全部转移到哪里？",
+                options: ["最右侧的第三根柱子", "中间的第二根柱子", "随便哪一根都可以"],
+                answer: 0
+            },
+            {
+                type: "word",
+                question: "【词汇互动】‘神殿’的英文单词是？(点击选项听发音)",
+                options: ["Temple", "Forest", "Castle"],
+                answer: 0
+            },
+            {
+                type: "word",
+                question: "【词汇互动】‘能量环’的英文单词是？",
+                options: ["Ring", "Apple", "Box"],
+                answer: 0
+            },
+            {
+                type: "word",
+                question: "【词汇互动】‘魔法’的英文单词是？",
+                options: ["Magic", "Music", "Moon"],
+                answer: 0
+            }
+        ];
+        let currentQuestionIdx = 0;
+        let selectedOption = null;
+        let correctCount = 0;
+        let currentQuestionFailed = false;
+
+        function switchStage(stageName) {
+            document.getElementById('stage-story').classList.add('hidden');
+            document.getElementById('stage-logic').classList.add('hidden');
+            document.getElementById('stage-quiz').classList.add('hidden');
+            document.getElementById('stage-success').classList.add('hidden');
+
+            const dotStory = document.getElementById('dot-story');
+            const dotLogic = document.getElementById('dot-logic');
+            const dotQuiz = document.getElementById('dot-quiz');
+            const btnPrev = document.getElementById('btn-prev-stage');
+            
+            [dotStory, dotLogic, dotQuiz].forEach(dot => {
+                dot.className = "h-3 w-3 bg-slate-200 rounded-full transition-all duration-300";
+            });
+
+            if (stageName === 'story') {
+                currentStageState = STAGES.STORY;
+                document.getElementById('stage-story').classList.remove('hidden');
+                dotStory.className = "h-3 w-10 bg-rose-400 rounded-full shadow-sm transition-all duration-300";
+                btnPrev.classList.add('hidden');
+            } 
+            else if (stageName === 'logic') {
+                currentStageState = STAGES.LOGIC;
+                document.getElementById('stage-logic').classList.remove('hidden');
+                dotLogic.className = "h-3 w-10 bg-rose-400 rounded-full shadow-sm transition-all duration-300";
+                btnPrev.classList.remove('hidden');
+                resetHanoi();
+            } 
+            else if (stageName === 'quiz') {
+                currentStageState = STAGES.QUIZ;
+                document.getElementById('stage-quiz').classList.remove('hidden');
+                dotQuiz.className = "h-3 w-10 bg-rose-400 rounded-full shadow-sm transition-all duration-300";
+                btnPrev.classList.remove('hidden');
+                startQuiz();
+            } 
+            else if (stageName === 'success') {
+                currentStageState = STAGES.SUCCESS;
+                document.getElementById('stage-success').classList.remove('hidden');
+                document.getElementById('progress-bar-container').classList.add('hidden');
+                renderSuccessScreen();
+            }
+        }
+
+        function goPrevStage() {
+            if (currentStageState === STAGES.LOGIC) switchStage('story');
+            else if (currentStageState === STAGES.QUIZ) switchStage('logic');
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.innerText = message;
+            toast.classList.remove('opacity-0', 'pointer-events-none');
+            toast.classList.add('opacity-100', 'translate-y-[-10px]');
+            setTimeout(() => {
+                toast.classList.remove('opacity-100', 'translate-y-[-10px]');
+                toast.classList.add('opacity-0', 'pointer-events-none');
+            }, 2500);
+        }
+
+        // 核心修复：自然语音合成引擎 (中文拦截不发音)
+        window.speakWord = function(text, forceLang = '') {
+            if ('speechSynthesis' in window) {
+                // 移除Emoji避免TTS尝试读取特殊字符
+                let cleanText = text.replace(/[\u{1F600}-\u{1F6FF}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F700}-\u{1F77F}\u{1F780}-\u{1F7FF}\u{1F800}-\u{1F8FF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}\u{1FAB0}-\u{1FABF}\u{1FAC0}-\u{1FACF}\u{1FAD0}-\u{1FADF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{2300}-\u{23FF}]/gu, '').trim();
+                
+                // 【核心修改】：中文不发音。检测到中文字符直接拦截返回
+                if (/[\u4e00-\u9fa5]/.test(cleanText)) {
+                    return;
+                }
+
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(cleanText);
+                
+                utterance.lang = forceLang || 'en-US';
+                utterance.rate = 1.0; 
+                utterance.pitch = 1.0; 
+                window.speechSynthesis.speak(utterance);
+            } else {
+                showToast("设备不支持语音朗读");
+            }
+        }
+
+        function resetHanoi() {
+            hanoiState = JSON.parse(JSON.stringify(INITIAL_HANOI));
+            selectedPillar = null;
+            steps = 0;
+            gameFinished = false;
+            document.getElementById('steps-counter').innerText = "0";
+            document.getElementById('logic-win-modal').classList.add('hidden');
+            renderHanoi();
+        }
+
+        function showHanoiHint() {
+            document.getElementById('hint-modal').classList.remove('hidden');
+        }
+
+        function closeHanoiHint() {
+            document.getElementById('hint-modal').classList.add('hidden');
+        }
+
+        function handlePillarClick(pillarIndex) {
+            if (gameFinished) return;
+
+            if (selectedPillar === null) {
+                if (hanoiState[pillarIndex].length > 0) {
+                    selectedPillar = pillarIndex;
+                    // 点击圆盘时，大声朗读对应的纯英文单词 (修复大写拼读错误，如避免SUN被读成S-U-N)
+                    const topDisk = hanoiState[pillarIndex][hanoiState[pillarIndex].length - 1];
+                    const wordToSpeak = DISK_STYLES[topDisk].speakText; 
+                    speakWord(wordToSpeak, 'en-US'); 
+                    renderHanoi();
+                } else {
+                    showToast("这根柱子上没有能量环哦");
+                }
+            } 
+            else {
+                if (selectedPillar === pillarIndex) {
+                    selectedPillar = null;
+                    renderHanoi();
+                    return;
+                }
+
+                const sourceTopDisk = hanoiState[selectedPillar][hanoiState[selectedPillar].length - 1];
+                const targetTopDisk = hanoiState[pillarIndex].length > 0 ? hanoiState[pillarIndex][hanoiState[pillarIndex].length - 1] : null;
+
+                if (targetTopDisk !== null && sourceTopDisk > targetTopDisk) {
+                    showToast("⚠️ 警告：大圆环绝对不能压在小的上面！");
+                    const pContainer = document.querySelectorAll('#stage-logic .relative.w-1\\/3')[pillarIndex];
+                    pContainer.classList.add('shake-err');
+                    setTimeout(() => pContainer.classList.remove('shake-err'), 400);
+                    selectedPillar = null;
+                    renderHanoi();
+                    return;
+                }
+
+                hanoiState[selectedPillar].pop();
+                hanoiState[pillarIndex].push(sourceTopDisk);
+                steps++;
+                document.getElementById('steps-counter').innerText = steps;
+                selectedPillar = null;
+                renderHanoi();
+                checkHanoiWin();
+            }
+        }
+
+        function checkHanoiWin() {
+            if (hanoiState[2].length === 4) {
+                gameFinished = true;
+                let praise = "Good!";
+                if(steps === 15) praise = "Perfect!"; 
+                else if(steps <= 25) praise = "Excellent!";
+                
+                document.getElementById('win-speech-text').innerText = praise;
+                setTimeout(() => speakWord(praise, 'en-US'), 500);
+
+                setTimeout(() => {
+                    document.getElementById('logic-win-modal').classList.remove('hidden');
+                }, 1000);
+            }
+        }
+
+        // 修复：第三关无法打开，补充跳转函数
+        function goToQuizStage() {
+            document.getElementById('logic-win-modal').classList.add('hidden');
+            switchStage('quiz');
+        }
+
+        function renderHanoi() {
+            const layer = document.getElementById('disks-layer');
+            layer.innerHTML = '';
+            const pillarXCenters = [16.666, 50, 83.333]; 
+
+            for (let pIdx = 0; pIdx < 3; pIdx++) {
+                const disksInPillar = hanoiState[pIdx];
+                for (let dIdx = 0; dIdx < disksInPillar.length; dIdx++) {
+                    const diskSize = disksInPillar[dIdx];
+                    const style = DISK_STYLES[diskSize];
+                    const isSelected = (selectedPillar === pIdx) && (dIdx === disksInPillar.length - 1);
+
+                    const el = document.createElement('div');
+                    el.className = `disk absolute flex items-center justify-center font-black tracking-widest text-xs md:text-sm rounded-[1rem] border-2 border-white/50 ${style.color} ${isSelected ? 'selected' : ''}`;
+                    
+                    el.style.height = '14%';
+                    const wRatio = parseInt(style.width) / 100;
+                    el.style.width = `calc(33.333% * ${wRatio})`;
+                    
+                    el.style.left = `${pillarXCenters[pIdx]}%`;
+                    if(!isSelected) {
+                        el.style.transform = 'translateX(-50%)';
+                    }
+                    
+                    // 底部基座顶部在 18% 处 (12% bottom + 6% height)。每个盘子占 14% 高度。完美贴合。
+                    el.style.bottom = `calc(18% + ${dIdx * 14}%)`;
+                    el.innerText = style.text;
+                    layer.appendChild(el);
+                }
+            }
+        }
+
+        function startQuiz() {
+            currentQuestionIdx = 0;
+            correctCount = 0;
+            selectedOption = null;
+            currentQuestionFailed = false;
+            showQuestion();
+        }
+
+        function showQuestion() {
+            selectedOption = null;
+            currentQuestionFailed = false; 
+            const q = QUIZ_QUESTIONS[currentQuestionIdx];
+            
+            document.getElementById('quiz-progress').innerText = `${currentQuestionIdx + 1} / ${QUIZ_QUESTIONS.length}`;
+            document.getElementById('question-text').innerText = q.question;
+
+            const optionsBox = document.getElementById('quiz-options');
+            optionsBox.innerHTML = '';
+
+            const isReading = q.type === 'reading';
+            const paddingClass = isReading ? 'p-5 md:p-6' : 'p-4 md:p-5';
+            const textClass = isReading ? 'text-lg md:text-xl' : 'text-base md:text-lg';
+
+            q.options.forEach((optText, idx) => {
+                const btn = document.createElement('button');
+                btn.className = `w-full text-left ${paddingClass} rounded-3xl border-4 border-slate-100 bg-white hover:border-rose-200 hover:bg-rose-50 text-slate-700 shadow-sm transition-all duration-200 font-bold ${textClass} candy-btn flex justify-between items-center group`;
+                
+                btn.innerHTML = `<span>${optText}</span>`;
+                btn.onclick = () => selectQuizAnswer(idx, btn);
+                optionsBox.appendChild(btn);
+            });
+        }
+
+        function selectQuizAnswer(idx, clickedBtn) {
+            if (clickedBtn.disabled || selectedOption === "done") return;
+            const q = QUIZ_QUESTIONS[currentQuestionIdx];
+
+            // 选项自然朗读
+            speakWord(q.options[idx]);
+
+            const isCorrect = idx === q.answer;
+
+            if (isCorrect) {
+                selectedOption = "done"; 
+                if(!currentQuestionFailed) correctCount++;
+
+                const isReading = q.type === 'reading';
+                const paddingClass = isReading ? 'p-5 md:p-6' : 'p-4 md:p-5';
+                const textClass = isReading ? 'text-lg md:text-xl' : 'text-base md:text-lg';
+
+                clickedBtn.className = `w-full text-left ${paddingClass} rounded-3xl border-4 border-emerald-400 bg-emerald-100 text-emerald-800 shadow-inner font-bold ${textClass} flex justify-between items-center`;
+                clickedBtn.innerHTML = `<span>${q.options[idx]}</span><span class="text-2xl animate-bounce">✓</span>`;
+                
+                const options = document.getElementById('quiz-options').children;
+                for (let i = 0; i < options.length; i++) {
+                    options[i].disabled = true;
+                    if (i !== idx) options[i].classList.add("opacity-30");
+                }
+
+                setTimeout(() => {
+                    if (currentQuestionIdx < QUIZ_QUESTIONS.length - 1) {
+                        currentQuestionIdx++;
+                        showQuestion();
+                    } else {
+                        switchStage('success');
+                    }
+                }, 1600);
+
+            } else {
+                currentQuestionFailed = true;
+                clickedBtn.disabled = true; 
+                
+                const isReading = q.type === 'reading';
+                const paddingClass = isReading ? 'p-5 md:p-6' : 'p-4 md:p-5';
+                const textClass = isReading ? 'text-lg md:text-xl' : 'text-base md:text-lg';
+
+                clickedBtn.className = `w-full text-left ${paddingClass} rounded-3xl border-4 border-rose-400 bg-rose-100 text-rose-800 font-bold ${textClass} flex justify-between items-center`;
+                clickedBtn.innerHTML = `<span>${q.options[idx]}</span><span class="text-xl font-black text-rose-500">再想想</span>`;
+            }
+        }
+
+        function renderSuccessScreen() {
+            const starsRow = document.getElementById('stars-row');
+            starsRow.innerHTML = '';
+            
+            let starNum = 1;
+            if (correctCount === QUIZ_QUESTIONS.length) starNum = 3;
+            else if (correctCount >= 4) starNum = 2;
+
+            for (let i = 0; i < 3; i++) {
+                const star = document.createElement('span');
+                if (i < starNum) {
+                    star.className = "text-6xl md:text-7xl drop-shadow-[0_10px_10px_rgba(251,191,36,0.4)] animate-bounce";
+                    star.style.animationDelay = `${i * 200}ms`;
+                    star.innerText = "⭐";
+                } else {
+                    star.className = "text-6xl md:text-7xl opacity-30 filter grayscale";
+                    star.innerText = "⭐";
+                }
+                starsRow.appendChild(star);
+            }
+        }
+
+        function restartFullAdventure() {
+            currentQuestionIdx = 0;
+            correctCount = 0;
+            selectedOption = null;
+            currentQuestionFailed = false;
+            switchStage('story');
+        }
+
+        window.onload = () => switchStage('story');
+    </script>
+<div onclick="window.location.href='index.html';" style="position: fixed; bottom: 24px; right: 24px; z-index: 2147483647; background: white; border: 4px solid #8b5cf6; color: #6d28d9; font-family: 'Noto Sans SC', sans-serif; font-weight: 900; font-size: 16px; padding: 12px 24px; border-radius: 50px; box-shadow: 0 10px 25px rgba(139,92,246,0.3); transition: transform 0.2s; cursor: pointer; pointer-events: auto;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+        🏠 返回选关大厅
+    </div>
+</body>
+</html>

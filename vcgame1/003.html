@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>怪兽厨房的果汁魔法</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <!-- Google Fonts for child-friendly appearance -->
+    <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Nunito:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Nunito', 'Microsoft YaHei', sans-serif;
+            background-color: #F5F7FF;
+            background-image: radial-gradient(#e0e6ff 1.5px, transparent 1.5px), radial-gradient(#e0e6ff 1.5px, #f5f7ff 1.5px);
+            background-size: 32px 32px;
+            background-position: 0 0, 16px 16px;
+        }
+        .title-font {
+            font-family: 'ZCOOL KuaiLe', 'Nunito', sans-serif;
+        }
+        /* Fluid bouncing transition animation for both Y position and Height of the SVG liquid */
+        .water-flow {
+            transition: y 0.85s cubic-bezier(0.34, 1.56, 0.64, 1), height 0.85s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .confetti {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            animation: fall 3.5s linear infinite;
+        }
+        @keyframes fall {
+            0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-between p-4 sm:p-6 overflow-x-hidden select-none">
+    
+    <!-- Confetti Container -->
+    <div id="confetti-container" class="fixed inset-0 pointer-events-none z-50 hidden"></div>
+
+    <!-- MAIN APP CANVAS -->
+    <main class="w-full max-w-4xl bg-white rounded-[2.5rem] shadow-[0_25px_60px_rgba(99,102,241,0.12)] border-[5px] border-indigo-100 overflow-hidden flex flex-col my-auto min-h-[680px] relative animate__animated animate__zoomIn">
+        
+        <!-- HEADER -->
+        <header class="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 p-5 border-b-[4px] border-indigo-50 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3.5">
+                <div class="bg-white/95 p-2 rounded-2xl shadow-sm border border-purple-100 animate__animated animate__bounceIn">
+                    <svg class="w-11 h-11 text-indigo-500 animate-bounce" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="32" cy="32" r="28" fill="#a78bfa"/>
+                        <circle cx="24" cy="24" r="4" fill="white"/>
+                        <circle cx="40" cy="24" r="4" fill="white"/>
+                        <circle cx="24" cy="25" r="2" fill="black"/>
+                        <circle cx="40" cy="25" r="2" fill="black"/>
+                        <path d="M22 42C26 46 38 46 42 42" stroke="white" stroke-width="4" stroke-linecap="round"/>
+                        <path d="M12 18L20 22M52 18L44 22" stroke="#4c1d95" stroke-width="3" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="title-font text-2xl sm:text-3xl text-white drop-shadow-[0_2px_3px_rgba(99,20,180,0.25)] tracking-wider">怪兽厨房的果汁魔法</h1>
+                    <p class="text-[11px] text-purple-950 font-black bg-white/45 px-3 py-0.5 rounded-full inline-block mt-1">第三关：水桶容积逻辑课</p>
+                </div>
+            </div>
+            
+            <!-- Page Navigation Tabs -->
+            <nav class="flex bg-black/10 p-1 rounded-2xl border border-white/30 shadow-inner">
+                <button id="nav-btn-1" onclick="switchPage(1)" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-black transition-all duration-300 flex items-center gap-1.5 bg-white text-purple-700 shadow-sm scale-105">
+                    <i data-lucide="book-open" class="w-4 h-4"></i> 1. 魔法故事
+                </button>
+                <button id="nav-btn-2" onclick="switchPage(2)" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-black transition-all duration-300 flex items-center gap-1.5 text-white hover:bg-white/10">
+                    <i data-lucide="gamepad-2" class="w-4 h-4"></i> 2. 魔法酿造
+                </button>
+                <button id="nav-btn-3" onclick="switchPage(3)" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-black transition-all duration-300 flex items-center gap-1.5 text-white hover:bg-white/10">
+                    <i data-lucide="pencil" class="w-4 h-4"></i> 3. 魔法练习
+                </button>
+            </nav>
+        </header>
+
+        <!-- MAIN DYNAMIC CONTENT CONTAINER -->
+        <div class="flex-grow p-5 sm:p-7 flex flex-col justify-center min-h-[500px]">
+            
+            <!-- PAGE 1: STORY READ -->
+            <section id="page-1" class="page-content block animate__animated animate__fadeIn">
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+                    
+                    <!-- Cute Monster Panel -->
+                    <div class="md:col-span-4 flex flex-col items-center bg-purple-50/60 p-6 rounded-[2.2rem] border-3 border-dashed border-purple-200/80 shadow-inner">
+                        <div class="relative w-40 h-40 animate__animated animate__pulse">
+                            <!-- Q-Version Monster Dudu SVG -->
+                            <svg class="w-full h-full" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="15" y="20" width="70" height="65" rx="35" fill="#c084fc"/>
+                                <path d="M25 25C20 10 35 15 30 22M75 25C80 10 65 15 70 22" stroke="#a855f7" stroke-width="6" stroke-linecap="round"/>
+                                <circle cx="38" cy="45" r="10" fill="white" stroke="#6b21a8" stroke-width="2"/>
+                                <circle cx="62" cy="45" r="10" fill="white" stroke="#6b21a8" stroke-width="2"/>
+                                <circle cx="40" cy="45" r="4" fill="#1e1b4b"/>
+                                <circle cx="64" cy="45" r="4" fill="#1e1b4b"/>
+                                <circle cx="28" cy="58" r="5" fill="#f472b6" opacity="0.6"/>
+                                <circle cx="72" cy="58" r="5" fill="#f472b6" opacity="0.6"/>
+                                <path d="M40 60C40 68 60 68 60 60H40Z" fill="#701a75"/>
+                                <path d="M45 60L48 64L51 60M55 60L52 64L49 60" fill="white"/>
+                                <path d="M30 75C30 75 35 90 50 90C65 90 70 75 70 75" fill="#fef08a" stroke="#ca8a04" stroke-width="3"/>
+                                <path d="M42 82H58M50 74V90" stroke="#ca8a04" stroke-width="2"/>
+                            </svg>
+                            <div class="absolute -top-3 -right-6 bg-yellow-100 border-2 border-yellow-300 text-yellow-800 text-xs font-black px-3 py-1 rounded-full shadow-md rotate-12">
+                                帮帮我！
+                            </div>
+                        </div>
+                        <h3 class="title-font text-xl text-purple-700 mt-4 font-black">厨师：嘟嘟 (Dudu)</h3>
+                        <p class="text-xs text-purple-400 mt-1 font-bold">讨厌数学，喜欢果汁</p>
+                    </div>
+
+                    <!-- Story Text Panel -->
+                    <div class="md:col-span-8 flex flex-col justify-between space-y-4">
+                        <div class="bg-gradient-to-br from-indigo-50/60 to-indigo-50/20 border-2 border-indigo-100/50 p-6 rounded-[2rem] relative shadow-sm">
+                            <div class="absolute -top-3 left-6 bg-indigo-500 text-white text-[11px] font-black px-3.5 py-1 rounded-full tracking-wider shadow-sm">
+                                魔法故事大本营
+                            </div>
+                            <div class="text-slate-700 leading-relaxed space-y-3.5 pt-2 text-[15px]">
+                                <p class="indent-8 font-semibold">
+                                    调皮的小怪兽<span class="text-purple-600 font-extrabold">嘟嘟（Dudu）</span>收到了森林仲夏夜派对的邀请函！大家都想品尝他特制的蓝莓果汁。
+                                </p>
+                                <p class="indent-8 font-semibold">
+                                    派对主人特别交代：“请带上<span class="text-indigo-600 font-black bg-indigo-100 px-2 py-0.5 rounded-md">正好 4 升（Liters）</span>的蓝莓魔法果汁，多一分或者少一分，魔法都会失效哦！”
+                                </p>
+                                <p class="indent-8 font-semibold">
+                                    嘟嘟兴冲冲地跑进怪兽厨房，可当他拉开橱柜时，瞬间傻眼了——柜子里只有两个完全没有刻度的魔法桶（Bucket），一个能装 <span class="text-rose-500 font-extrabold">5 升</span>，另一个只能装 <span class="text-amber-500 font-extrabold">3 升</span>。
+                                </p>
+                                <p class="indent-8 font-semibold text-purple-700 italic font-black">
+                                    “哎呀，没有刻度，我该怎么倒出刚好 4 升的果汁呢？”嘟嘟愁得耳朵都耷拉了下来。
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Tip Box -->
+                        <div class="flex flex-col sm:flex-row items-center gap-4 bg-amber-50/70 p-4 rounded-2xl border-2 border-amber-100/60 shadow-inner">
+                            <div class="bg-amber-100 text-amber-600 p-2.5 rounded-full shadow-sm">
+                                <i data-lucide="lightbulb" class="w-6 h-6 animate-pulse"></i>
+                            </div>
+                            <div class="flex-grow text-center sm:text-left">
+                                <p class="text-xs font-black text-amber-800">💡 逻辑小提示：</p>
+                                <p class="text-xs text-amber-700 mt-0.5 font-semibold">我们可以无限使用果汁池的水，也可以把水排尽。通过两只水桶反复互相倾倒，就能魔法般配制出正好 4 升！</p>
+                            </div>
+                        </div>
+                        <div class="flex justify-end">
+                            <button onclick="switchPage(2)" class="px-8 py-3.5 bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white rounded-2xl font-black text-[16px] shadow-md hover:shadow-indigo-200 hover:scale-[1.02] active:scale-95 transition-all duration-200 flex items-center gap-2">
+                                前往魔法酿造 <i data-lucide="sparkles" class="w-5 h-5"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PAGE 2: LOGIC GAME -->
+            <section id="page-2" class="page-content hidden animate__animated animate__fadeIn">
+                <!-- Status Bar with integrated Answer Button -->
+                <div class="flex flex-col md:flex-row justify-between items-center bg-indigo-50/70 border-2 border-indigo-100/60 px-6 py-3 rounded-[1.8rem] gap-3 mb-5">
+                    <div class="flex items-center gap-2.5">
+                        <span class="flex h-3 w-3 relative">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-3 w-3 bg-rose-500"></span>
+                        </span>
+                        <p class="text-indigo-950 font-black text-sm sm:text-[15px]">
+                            今日魔法任务：在任意一个桶中配出 <span class="bg-indigo-600 text-white px-2.5 py-0.5 rounded-full font-bold shadow-sm">4 升</span> 果汁！
+                        </p>
+                    </div>
+                    
+                    <!-- Action Control Panel -->
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs bg-indigo-100/60 text-indigo-900 font-extrabold px-3 py-1.5 rounded-xl border border-indigo-200/50">
+                            已尝试步数: <span id="step-counter" class="text-sm font-black text-indigo-600">0</span> 步
+                        </span>
+                        <button onclick="toggleVisualAnswer()" class="bg-emerald-50 hover:bg-emerald-100 border-2 border-emerald-200 px-3 py-1.5 rounded-xl text-xs font-black text-emerald-800 transition-all flex items-center gap-1 shadow-sm" title="不知道怎么做？点我查看演示答案">
+                            <i data-lucide="key" class="w-3.5 h-3.5 text-emerald-600"></i> 看答案 🔑
+                        </button>
+                        <button onclick="resetGame()" class="bg-white hover:bg-slate-50 border-2 border-indigo-100/80 p-1.5 rounded-xl text-indigo-600 hover:text-indigo-800 transition-colors shadow-sm" title="重新开始">
+                            <i data-lucide="rotate-ccw" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Core Game Arena -->
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch relative">
+                    
+                    <!-- Left: Unlimited Juice Pool (Water Source) -->
+                    <div class="md:col-span-3 flex flex-col items-center justify-center p-4 bg-sky-50/50 border-2 border-dashed border-sky-200/80 rounded-[2rem] shadow-inner">
+                        <p class="text-xs text-sky-800 font-black mb-3 flex items-center gap-1">
+                            <i data-lucide="droplet" class="w-3.5 h-3.5 text-sky-500 fill-sky-500"></i> 无限神奇果汁池
+                        </p>
+                        <div class="w-24 h-24 bg-gradient-to-b from-blue-300 to-indigo-500 rounded-full flex items-center justify-center shadow-lg relative overflow-hidden border-4 border-white">
+                            <div class="absolute inset-0 opacity-20 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-amber-200 via-red-300 to-indigo-900 animate-pulse"></div>
+                            <i data-lucide="sparkles" class="w-10 h-10 text-white animate-spin" style="animation-duration: 8s;"></i>
+                        </div>
+                        <p class="text-[10px] text-sky-600 font-black mt-3 text-center leading-normal">点击桶下方的<br>"接满果汁"即可取水</p>
+                    </div>
+
+                    <!-- Middle: Interactive Buckets -->
+                    <div class="md:col-span-6 flex flex-col items-center justify-center gap-5 bg-purple-50/40 rounded-[2.2rem] border-2 border-purple-100 p-5 shadow-inner">
+                        <div class="flex justify-around items-end w-full gap-6 min-h-[220px]">
+                            
+                            <!-- Bucket A (5 Liters) -->
+                            <div id="bucket-container-5" class="flex flex-col items-center flex-1 max-w-[140px] transition-transform duration-300">
+                                <span class="bg-purple-100 text-purple-800 font-black text-xs px-2.5 py-0.5 rounded-full mb-2">5 升桶</span>
+                                <div class="relative w-full aspect-[3/4] cursor-pointer" onclick="selectBucket(5)">
+                                    <svg class="w-full h-full drop-shadow-md" viewBox="0 0 120 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <!-- Bucket Outer Border -->
+                                        <path d="M15 15L30 145C30 150 40 155 60 155C80 155 90 150 90 145L105 15" stroke="#4b5563" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+                                        <!-- Handle arching -->
+                                        <path d="M15 15C15 -5, 105 -5, 105 15" stroke="#9ca3af" stroke-width="3" stroke-linecap="round" stroke-dasharray="2,2"/>
+                                        <mask id="water-mask-5">
+                                            <path d="M16 16L30 144C31 148 40 152 60 152C80 152 89 148 90 144L104 16Z" fill="white"/>
+                                        </mask>
+                                        <g mask="url(#water-mask-5)">
+                                            <!-- Water Area smoothly transitions y and height -->
+                                            <rect id="water-rect-5" x="0" y="160" width="120" height="0" fill="url(#juice-gradient)" class="water-flow"/>
+                                        </g>
+                                        <line x1="21" y1="44" x2="35" y2="44" stroke="#9ca3af" stroke-width="2"/>
+                                        <text x="39" y="48" fill="#9ca3af" font-size="10" font-weight="black">4L</text>
+                                        <line x1="25" y1="72" x2="37" y2="72" stroke="#9ca3af" stroke-width="2"/>
+                                        <text x="41" y="76" fill="#9ca3af" font-size="10" font-weight="black">3L</text>
+                                        <line x1="28" y1="100" x2="39" y2="100" stroke="#9ca3af" stroke-width="2"/>
+                                        <text x="43" y="104" fill="#9ca3af" font-size="10" font-weight="black">2L</text>
+                                        <line x1="32" y1="128" x2="41" y2="128" stroke="#9ca3af" stroke-width="2"/>
+                                        <text x="45" y="132" fill="#9ca3af" font-size="10" font-weight="black">1L</text>
+                                    </svg>
+                                    <div class="absolute inset-x-0 bottom-6 flex flex-col items-center justify-center pointer-events-none">
+                                        <div class="bg-indigo-950/80 backdrop-blur-sm text-white px-2.5 py-0.5 rounded-full border border-indigo-300/30 text-center shadow-md">
+                                            <span id="bucket-text-5" class="text-lg font-black block leading-none">0</span>
+                                            <span class="text-[9px] text-indigo-200 uppercase font-bold tracking-wider">/ 5</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex flex-col gap-1.5 mt-3 w-full">
+                                    <button onclick="fillBucket(5)" class="bg-indigo-100 hover:bg-indigo-200 text-indigo-700 text-xs font-black py-2 px-1 rounded-xl border border-indigo-300/50 flex items-center justify-center gap-1 active:scale-95 transition-all">
+                                        <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i>接满果汁 (Full)
+                                    </button>
+                                    <button onclick="pourBucket(5, 3)" class="bg-purple-100 hover:bg-purple-200 text-purple-700 text-xs font-black py-2 px-1 rounded-xl border border-purple-300/50 flex items-center justify-center gap-1 active:scale-95 transition-all">
+                                        <i data-lucide="log-out" class="w-3.5 h-3.5"></i>倒入 3 升桶 (Pour)
+                                    </button>
+                                    <button onclick="emptyBucket(5)" class="bg-rose-100 hover:bg-rose-200 text-rose-700 text-xs font-black py-2 px-1 rounded-xl border border-rose-300/50 flex items-center justify-center gap-1 active:scale-95 transition-all">
+                                        <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>排空果汁 (Empty)
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Bucket B (3 Liters) -->
+                            <div id="bucket-container-3" class="flex flex-col items-center flex-1 max-w-[140px] transition-transform duration-300">
+                                <span class="bg-amber-100 text-amber-800 font-black text-xs px-2.5 py-0.5 rounded-full mb-2">3 升桶</span>
+                                <div class="relative w-full aspect-[3/4] cursor-pointer" onclick="selectBucket(3)">
+                                    <svg class="w-full h-full drop-shadow-md" viewBox="0 0 120 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <!-- Bucket Outer Border -->
+                                        <path d="M22 35L33 143C33 148 41 152 60 152C79 152 87 148 87 143L98 35" stroke="#4b5563" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+                                        <!-- Handle arching -->
+                                        <path d="M22 35C22 15, 98 15, 98 35" stroke="#9ca3af" stroke-width="3" stroke-linecap="round" stroke-dasharray="2,2"/>
+                                        <mask id="water-mask-3">
+                                            <path d="M23 36L33 142C34 146 41 149 60 149C79 149 86 146 87 142L97 36Z" fill="white"/>
+                                        </mask>
+                                        <g mask="url(#water-mask-3)">
+                                            <!-- Water Area smoothly transitions y and height -->
+                                            <rect id="water-rect-3" x="0" y="160" width="120" height="0" fill="url(#juice-gradient)" class="water-flow"/>
+                                        </g>
+                                        <line x1="29" y1="73" x2="41" y2="73" stroke="#9ca3af" stroke-width="2"/>
+                                        <text x="45" y="77" fill="#9ca3af" font-size="10" font-weight="black">2L</text>
+                                        <line x1="31" y1="110" x2="42" y2="110" stroke="#9ca3af" stroke-width="2"/>
+                                        <text x="46" y="114" fill="#9ca3af" font-size="10" font-weight="black">1L</text>
+                                    </svg>
+                                    <div class="absolute inset-x-0 bottom-6 flex flex-col items-center justify-center pointer-events-none">
+                                        <div class="bg-indigo-950/80 backdrop-blur-sm text-white px-2.5 py-0.5 rounded-full border border-indigo-300/30 text-center shadow-md">
+                                            <span id="bucket-text-3" class="text-lg font-black block leading-none">0</span>
+                                            <span class="text-[9px] text-indigo-200 uppercase font-bold tracking-wider">/ 3</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex flex-col gap-1.5 mt-3 w-full">
+                                    <button onclick="fillBucket(3)" class="bg-indigo-100 hover:bg-indigo-200 text-indigo-700 text-xs font-black py-2 px-1 rounded-xl border border-indigo-300/50 flex items-center justify-center gap-1 active:scale-95 transition-all">
+                                        <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i>接满果汁 (Full)
+                                    </button>
+                                    <button onclick="pourBucket(3, 5)" class="bg-purple-100 hover:bg-purple-200 text-purple-700 text-xs font-black py-2 px-1 rounded-xl border border-purple-300/50 flex items-center justify-center gap-1 active:scale-95 transition-all">
+                                        <i data-lucide="log-out" class="w-3.5 h-3.5"></i>倒入 5 升桶 (Pour)
+                                    </button>
+                                    <button onclick="emptyBucket(3)" class="bg-rose-100 hover:bg-rose-200 text-rose-700 text-xs font-black py-2 px-1 rounded-xl border border-rose-300/50 flex items-center justify-center gap-1 active:scale-95 transition-all">
+                                        <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>排空果汁 (Empty)
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <svg class="w-0 h-0 absolute">
+                            <defs>
+                                <linearGradient id="juice-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                                    <stop offset="0%" stop-color="#818cf8" />
+                                    <stop offset="60%" stop-color="#4f46e5" />
+                                    <stop offset="100%" stop-color="#312e81" />
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                        
+                        <!-- Real-time instruction hint -->
+                        <div id="action-hint" class="text-xs text-purple-600 font-extrabold bg-white px-4 py-2.5 rounded-2xl shadow-sm border border-purple-100/60 w-full min-h-[44px] flex items-center justify-center">
+                            🔮 精灵悄悄话：接满 5 升桶，然后试着倒入 3 升桶里吧！
+                        </div>
+                    </div>
+
+                    <!-- Right: Sink (Downspout) -->
+                    <div class="md:col-span-3 flex flex-col items-center justify-center p-4 bg-rose-50/50 border-2 border-dashed border-rose-200/80 rounded-[2rem] shadow-inner">
+                        <p class="text-xs text-rose-800 font-black mb-3 flex items-center gap-1">
+                            <i data-lucide="trash-2" class="w-3.5 h-3.5 text-rose-500"></i> 神奇下水道
+                        </p>
+                        <div class="w-24 h-24 bg-gradient-to-b from-slate-200 to-slate-400 rounded-2xl flex items-center justify-center shadow-lg relative border-4 border-white">
+                            <div class="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center">
+                                <div class="w-4 h-4 bg-slate-950 rounded-full border border-slate-700 animate-pulse"></div>
+                            </div>
+                        </div>
+                        <p class="text-[10px] text-rose-600 font-black mt-3 text-center leading-normal">点击桶下方的"排空果汁"<br>可以将多余废水冲走</p>
+                    </div>
+
+                    <!-- GAME 2 SUCCESS DIALOG -->
+                    <div id="success-overlay" class="absolute inset-0 bg-indigo-950/90 backdrop-blur-md rounded-[2rem] flex flex-col items-center justify-center p-6 text-center z-40 hidden animate__animated animate__fadeIn">
+                        <div class="bg-white rounded-[2.2rem] p-8 max-w-md border-[5px] border-yellow-300 shadow-2xl relative animate__animated animate__bounceIn">
+                            <div class="absolute -top-12 left-1/2 -translate-x-1/2 bg-yellow-400 p-4 rounded-full border-4 border-white shadow-xl">
+                                <i data-lucide="star" class="w-12 h-12 text-white fill-white animate-spin" style="animation-duration: 6s;"></i>
+                            </div>
+                            <h2 class="title-font text-3xl text-indigo-900 mt-6 font-black">你做到了！🎉</h2>
+                            <p class="text-sm text-slate-500 font-bold mt-1">完美配比！4 升果汁出炉啦！</p>
+                            <div class="my-6 bg-purple-50/80 p-4 rounded-2xl border-2 border-dashed border-purple-200">
+                                <p class="text-xs text-purple-700 font-bold">(๑•̀ㅂ•́)و✧ 嘟嘟开心地在森林里跳舞庆祝，还学会了怎么去配出 4 升！</p>
+                            </div>
+                            <p class="text-xs text-indigo-500 font-extrabold mb-4">
+                                你仅用了 <span id="winning-steps" class="text-lg text-rose-500 font-black">0</span> 步即完成挑战！
+                            </p>
+                            <div class="flex gap-3 justify-center">
+                                <button onclick="resetGame()" class="px-5 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-extrabold rounded-xl text-xs transition-colors flex items-center gap-1.5">
+                                    <i data-lucide="refresh-cw" class="w-4 h-4"></i> 再玩一次
+                                </button>
+                                <button onclick="switchPage(3)" class="px-6 py-3 bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-500 hover:to-amber-600 text-slate-900 font-black rounded-xl text-sm shadow-md transition-all hover:scale-105 flex items-center gap-1.5">
+                                    前往练习册挑战 <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PAGE 3: REVIEWS & VOCABULARY -->
+            <section id="page-3" class="page-content hidden animate__animated animate__fadeIn">
+                <!-- Keep left-right side-by-side layout intact on tablets (md) and large screens -->
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+                    
+                    <!-- Left column: Educational Quiz -->
+                    <div class="md:col-span-6 space-y-4">
+                        <h3 class="title-font text-lg text-indigo-950 font-black flex items-center gap-2">
+                            <span class="bg-indigo-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs">📖</span>
+                            魔法故事挑战
+                        </h3>
+                        
+                        <!-- Question 1 -->
+                        <div class="bg-white border-2 border-slate-100 shadow-sm p-4 rounded-2xl question-block" id="q-block-1">
+                            <p class="text-sm font-black text-slate-800 mb-3 flex items-start gap-1.5">
+                                <span class="bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded text-xs">Q1</span>
+                                故事中，派对主人交代需要带上多少升果汁？
+                            </p>
+                            <div class="grid grid-cols-1 gap-2">
+                                <button onclick="answerQuestion(1, 'A')" id="opt-1-A" class="quiz-opt w-full text-left p-3 rounded-xl border border-slate-100 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition-colors flex justify-between items-center">
+                                    <span>A) 3 升</span>
+                                    <span class="icon-holder"><i data-lucide="circle" class="w-4 h-4 opacity-30"></i></span>
+                                </button>
+                                <button onclick="answerQuestion(1, 'B')" id="opt-1-B" class="quiz-opt w-full text-left p-3 rounded-xl border border-slate-100 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition-colors flex justify-between items-center">
+                                    <span>B) 正好 4 升</span>
+                                    <span class="icon-holder"><i data-lucide="circle" class="w-4 h-4 opacity-30"></i></span>
+                                </button>
+                                <button onclick="answerQuestion(1, 'C')" id="opt-1-C" class="quiz-opt w-full text-left p-3 rounded-xl border border-slate-100 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition-colors flex justify-between items-center">
+                                    <span>C) 5 升</span>
+                                    <span class="icon-holder"><i data-lucide="circle" class="w-4 h-4 opacity-30"></i></span>
+                                </button>
+                            </div>
+                            <p id="feedback-1" class="text-xs font-extrabold mt-2 hidden"></p>
+                        </div>
+
+                        <!-- Question 2 -->
+                        <div class="bg-white border-2 border-slate-100 shadow-sm p-4 rounded-2xl question-block" id="q-block-2">
+                            <p class="text-sm font-black text-slate-800 mb-3 flex items-start gap-1.5">
+                                <span class="bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded text-xs">Q2</span>
+                                为什么嘟嘟不直接在水桶上用刻度量取果汁？
+                            </p>
+                            <div class="grid grid-cols-1 gap-2">
+                                <button onclick="answerQuestion(2, 'A')" id="opt-2-A" class="quiz-opt w-full text-left p-3 rounded-xl border border-slate-100 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition-colors flex justify-between items-center">
+                                    <span>A) 因为魔法水桶完全没有刻度</span>
+                                    <span class="icon-holder"><i data-lucide="circle" class="w-4 h-4 opacity-30"></i></span>
+                                </button>
+                                <button onclick="answerQuestion(2, 'B')" id="opt-2-B" class="quiz-opt w-full text-left p-3 rounded-xl border border-slate-100 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition-colors flex justify-between items-center">
+                                    <span>B) 因为嘟嘟把他的尺子弄丢了</span>
+                                    <span class="icon-holder"><i data-lucide="circle" class="w-4 h-4 opacity-30"></i></span>
+                                </button>
+                                <button onclick="answerQuestion(2, 'C')" id="opt-2-C" class="quiz-opt w-full text-left p-3 rounded-xl border border-slate-100 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition-colors flex justify-between items-center">
+                                    <span>C) 因为嘟嘟懒得量尺寸</span>
+                                    <span class="icon-holder"><i data-lucide="circle" class="w-4 h-4 opacity-30"></i></span>
+                                </button>
+                            </div>
+                            <p id="feedback-2" class="text-xs font-extrabold mt-2 hidden"></p>
+                        </div>
+                    </div>
+
+                    <!-- Right column: Cute English Matching Game with Voice Playback -->
+                    <div class="md:col-span-6 space-y-4">
+                        <h3 class="title-font text-lg text-indigo-950 font-black flex items-center gap-2">
+                            <span class="bg-yellow-400 text-slate-900 w-6 h-6 rounded-full flex items-center justify-center text-xs">🪣</span>
+                            魔法英文词汇连连看 (点词发音)
+                        </h3>
+                        <p class="text-[11px] text-slate-500 font-extrabold mb-1 bg-yellow-50 px-3 py-1.5 rounded-xl border border-yellow-200">
+                            🔊 教学小语境：点击卡片可触发纯正的美式英语朗读哦！
+                        </p>
+                        
+                        <!-- Matching Game Arena -->
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="space-y-2">
+                                <p class="text-[9px] uppercase tracking-wider text-slate-400 font-black text-center">英文卡片</p>
+                                <div id="vocab-english-list" class="space-y-2"></div>
+                            </div>
+                            <div class="space-y-2">
+                                <p class="text-[9px] uppercase tracking-wider text-slate-400 font-black text-center">中文翻译</p>
+                                <div id="vocab-chinese-list" class="space-y-2"></div>
+                            </div>
+                        </div>
+
+                        <!-- Sparkly Submit Button -->
+                        <div class="pt-2">
+                            <button onclick="submitPracticeChallenge()" class="w-full py-3 bg-gradient-to-r from-purple-500 via-pink-500 to-amber-400 hover:opacity-95 text-white rounded-2xl font-black text-base shadow-lg hover:shadow-indigo-100 hover:scale-[1.02] active:scale-95 transition-all duration-200 flex items-center justify-center gap-2 animate__animated animate__pulse animate__infinite" style="animation-duration: 3s;">
+                                <i data-lucide="sparkles" class="w-5 h-5 text-white animate-spin" style="animation-duration: 5s;"></i> 提交魔法练习案 📜
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- GRAND FINALE PRACTICE WINNING OVERLAY -->
+                <div id="practice-win-overlay" class="fixed inset-0 bg-indigo-950/95 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center z-50 hidden animate__animated animate__fadeIn">
+                    <div class="bg-gradient-to-br from-white to-pink-50 rounded-[2.5rem] p-8 max-w-lg border-8 border-indigo-200 shadow-2xl relative animate__animated animate__bounceIn">
+                        <!-- Ultra Cute Bear Graphics representation -->
+                        <div class="flex justify-center mb-4">
+                            <div class="bg-indigo-50 p-4 rounded-full border-4 border-indigo-100 relative">
+                                <svg class="w-24 h-24 text-indigo-500 animate-pulse" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="50" cy="50" r="40" fill="#fed7aa" />
+                                    <!-- Ears -->
+                                    <circle cx="22" cy="22" r="12" fill="#fdba74" />
+                                    <circle cx="22" cy="22" r="6" fill="#f97316" />
+                                    <circle cx="78" cy="22" r="12" fill="#fdba74" />
+                                    <circle cx="78" cy="22" r="6" fill="#f97316" />
+                                    <!-- Eyes -->
+                                    <circle cx="36" cy="44" r="5" fill="#334155" />
+                                    <circle cx="36" cy="44" r="2" fill="white" />
+                                    <circle cx="64" cy="44" r="5" fill="#334155" />
+                                    <circle cx="64" cy="44" r="2" fill="white" />
+                                    <!-- Cheeks -->
+                                    <circle cx="26" cy="55" r="4" fill="#f43f5e" opacity="0.6"/>
+                                    <circle cx="74" cy="55" r="4" fill="#f43f5e" opacity="0.6"/>
+                                    <!-- Snout & Mouth -->
+                                    <ellipse cx="50" cy="56" rx="9" ry="6" fill="white" />
+                                    <circle cx="50" cy="54" r="3" fill="#334155" />
+                                    <path d="M47 58C49 61 51 61 53 58" stroke="#334155" stroke-width="2" stroke-linecap="round" />
+                                </svg>
+                                <span class="absolute -top-1 -right-1 bg-rose-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full rotate-12">MAX!</span>
+                            </div>
+                        </div>
+
+                        <h2 class="title-font text-3xl text-indigo-950 font-black tracking-wider">练习挑战全面大通关！</h2>
+                        <p class="text-sm text-pink-600 font-extrabold mt-2">✨ (๑•̀ㅂ•́)و✧ 给你超级无敌大个赞！ ✨</p>
+                        
+                        <div class="my-5 bg-white border-2 border-indigo-100 p-4 rounded-2xl shadow-inner text-left space-y-2">
+                            <p class="text-xs text-slate-700 font-bold flex items-center gap-1.5">
+                                <span class="text-emerald-500">✔</span> 魔法故事的背景和难题全部解答正确！
+                            </p>
+                            <p class="text-xs text-slate-700 font-bold flex items-center gap-1.5">
+                                <span class="text-emerald-500">✔</span> 5 个核心高频魔法词汇完全精准翻译！
+                            </p>
+                            <p class="text-xs text-slate-700 font-bold flex items-center gap-1.5">
+                                <span class="text-emerald-500">✔</span> 嘟嘟成功在派对上大受欢迎，多亏了你！
+                            </p>
+                        </div>
+
+                        <div class="flex gap-3 justify-center">
+                            <button onclick="location.reload()" class="px-6 py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-2xl text-sm shadow-md transition-all active:scale-95 flex items-center gap-1.5">
+                                <i data-lucide="rotate-ccw" class="w-4 h-4"></i> 重新开始探索课
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+        </div>
+
+        <!-- FOOTER PROGRESS BAR & NAV -->
+        <footer class="bg-slate-50 p-4 border-t-2 border-slate-100 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="w-full sm:w-1/2 flex items-center gap-3">
+                <span class="text-xs font-black text-slate-500 whitespace-nowrap">我的进度:</span>
+                <div class="w-full bg-slate-200 rounded-full h-3.5 overflow-hidden p-0.5 shadow-inner">
+                    <div id="overall-progress" class="bg-gradient-to-r from-purple-400 to-indigo-500 h-2.5 rounded-full transition-all duration-500 w-[33%]"></div>
+                </div>
+                <span id="progress-percent" class="text-xs font-black text-slate-700">33%</span>
+            </div>
+            
+            <div class="flex gap-2">
+                <button id="prev-btn" onclick="prevPage()" class="px-4 py-2 bg-white hover:bg-slate-100 border-2 border-slate-200 text-slate-600 rounded-xl text-xs font-extrabold transition-colors disabled:opacity-40 disabled:pointer-events-none flex items-center gap-1" disabled>
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i> 上一页
+                </button>
+                <button id="next-btn" onclick="nextPage()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-extrabold shadow-sm transition-colors flex items-center gap-1">
+                    下一页 <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </footer>
+    </main>
+
+    <!-- PREMIUM CUSTOM FRIENDLY WARNING MODAL -->
+    <div id="magic-alert-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4 z-50 hidden animate__animated animate__fadeIn">
+        <div class="bg-white rounded-[2.5rem] p-6 max-w-sm w-full border-[5px] border-indigo-100 shadow-2xl text-center animate__animated animate__zoomIn">
+            <div class="w-16 h-16 bg-rose-50 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-rose-100 animate-pulse">
+                <i data-lucide="lock" class="w-7 h-7"></i>
+            </div>
+            <h3 class="title-font text-lg text-slate-800 font-black mb-2">还差一点点哦！</h3>
+            <div id="magic-alert-text" class="text-xs text-slate-500 font-bold space-y-1.5 text-left bg-indigo-50/50 p-4 rounded-2xl border border-indigo-100/50 mb-5">
+                <!-- Dynamically filled with warning checklists -->
+            </div>
+            <button onclick="closeMagicAlert()" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-xl text-xs shadow-md transition-all">
+                我知道了，这就去！💪
+            </button>
+        </div>
+    </div>
+
+    <!-- AUDIO & LOGIC INTERACTS -->
+    <script>
+        // --- GAME STATE VARIABLES ---
+        let currentPage = 1;
+        const maxCapacity = { 5: 5, 3: 3 };
+        let currentLevel = { 5: 0, 3: 0 };
+        let gameSteps = 0;
+        let isGameWon = false;
+
+        // Quiz answers definition
+        const correctAnswers = { 1: 'B', 2: 'A' };
+        let answeredQuestions = { 1: false, 2: false };
+
+        // Vocabulary matching game data
+        const originalWords = [
+            { en: 'Bucket', cn: '水桶 🪣', id: 1 },
+            { en: 'Juice', cn: '果汁 🍹', id: 2 },
+            { en: 'Full', cn: '接满 🟢', id: 3 },
+            { en: 'Empty', cn: '排空 🔴', id: 4 },
+            { en: 'Pour', cn: '倒入 💦', id: 5 }
+        ];
+        let selectedEnglish = null;
+        let selectedChinese = null;
+        let matchedPairs = [];
+
+        // TTS Pronunciation function using Web Speech API
+        function speakWord(wordText) {
+            if ('speechSynthesis' in window) {
+                // Cancel previous speech to prevent overlap queues
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(wordText);
+                utterance.lang = 'en-US';
+                utterance.rate = 0.85; // Slightly slower for clear learning
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        // Initialize Icons
+        lucide.createIcons();
+
+        // --- PAGE SWITCH LOGIC ---
+        function switchPage(pageId) {
+            currentPage = pageId;
+            
+            // Hide all pages
+            document.querySelectorAll('.page-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`page-${pageId}`).classList.remove('hidden');
+
+            // Highlight Tab Button
+            for (let i = 1; i <= 3; i++) {
+                const btn = document.getElementById(`nav-btn-${i}`);
+                if (i === pageId) {
+                    btn.className = "px-4 py-2 rounded-xl text-xs sm:text-sm font-black transition-all duration-300 flex items-center gap-1.5 bg-white text-purple-700 shadow-sm scale-105";
+                } else {
+                    btn.className = "px-4 py-2 rounded-xl text-xs sm:text-sm font-black transition-all duration-300 flex items-center gap-1.5 text-white hover:bg-white/10";
+                }
+            }
+
+            // Update footer progress indicators
+            const progressMap = { 1: '33%', 2: '66%', 3: '100%' };
+            document.getElementById('overall-progress').style.width = progressMap[pageId];
+            document.getElementById('progress-percent').innerText = progressMap[pageId];
+
+            // Toggle prev/next button states
+            document.getElementById('prev-btn').disabled = (pageId === 1);
+            const nextBtn = document.getElementById('next-btn');
+            
+            if (pageId === 3) {
+                nextBtn.innerHTML = `重置 ⟲`;
+                nextBtn.onclick = function() { location.reload(); };
+            } else {
+                nextBtn.innerHTML = `下一页 <i data-lucide="arrow-right" class="w-4 h-4"></i>`;
+                nextBtn.onclick = nextPage;
+            }
+
+            // Recycle confetti to prevent overlay issues on other screens
+            if (pageId !== 2 || !isGameWon) {
+                stopConfetti();
+            }
+
+            lucide.createIcons();
+        }
+
+        function nextPage() { if (currentPage < 3) switchPage(currentPage + 1); }
+        function prevPage() { if (currentPage > 1) switchPage(currentPage - 1); }
+
+        // --- WATER INTERACTION LOGIC (PAGE 2) ---
+        function updateBucketUI() {
+            for (const size of [5, 3]) {
+                const textEl = document.getElementById(`bucket-text-${size}`);
+                const rectEl = document.getElementById(`water-rect-${size}`);
+                const level = currentLevel[size];
+                
+                textEl.innerText = level;
+                
+                // SVG dimensions translate filled liquid dynamically with animatable y and height attributes
+                const baseHeight = 160;
+                const fillFactor = level / maxCapacity[size];
+                const newY = baseHeight - (fillFactor * 130); 
+                rectEl.setAttribute('y', newY);
+                rectEl.setAttribute('height', baseHeight - newY);
+            }
+            document.getElementById('step-counter').innerText = gameSteps;
+        }
+
+        function fillBucket(size) {
+            if (isGameWon) return;
+            currentLevel[size] = maxCapacity[size];
+            gameSteps++;
+            document.getElementById('action-hint').innerText = `💧 将 ${size} 升水桶灌满魔法果汁。`;
+            updateBucketUI();
+            checkWinCondition();
+        }
+
+        function emptyBucket(size) {
+            if (isGameWon) return;
+            currentLevel[size] = 0;
+            gameSteps++;
+            document.getElementById('action-hint').innerText = `🗑️ 将 ${size} 升水桶中的果汁全部倒进下水道中。`;
+            updateBucketUI();
+            checkWinCondition();
+        }
+
+        function pourBucket(fromSize, toSize) {
+            if (isGameWon) return;
+            const fromAvailable = currentLevel[fromSize];
+            const toEmptySpace = maxCapacity[toSize] - currentLevel[toSize];
+            const transferAmount = Math.min(fromAvailable, toEmptySpace);
+
+            currentLevel[fromSize] -= transferAmount;
+            currentLevel[toSize] += transferAmount;
+            gameSteps++;
+
+            document.getElementById('action-hint').innerText = `🔁 成功把 ${transferAmount} 升果汁倒入对方的桶里。`;
+            updateBucketUI();
+            checkWinCondition();
+        }
+
+        function selectBucket(size) {
+            document.getElementById('action-hint').innerText = `💡 已经选中 ${size} 升水桶。你可以点击下方的按钮来倾倒它！`;
+        }
+
+        function toggleVisualAnswer() {
+            document.getElementById('action-hint').innerText = "🔑 满分步骤：1. 接满5升桶 ➔ 2. 倒入3升桶 (5升剩2) ➔ 3. 排空3升桶 ➔ 4. 将5升的剩水倒入3升桶 (3升装2) ➔ 5. 接满5升桶 ➔ 6. 倒入3升桶 (5升桶惊奇地剩下4升！)";
+        }
+
+        function checkWinCondition() {
+            if (currentLevel[5] === 4 || currentLevel[3] === 4) {
+                isGameWon = true;
+                document.getElementById('winning-steps').innerText = gameSteps;
+                document.getElementById('success-overlay').classList.remove('hidden');
+                startConfetti();
+            }
+        }
+
+        function resetGame() {
+            currentLevel = { 5: 0, 3: 0 };
+            gameSteps = 0;
+            isGameWon = false;
+            document.getElementById('success-overlay').classList.add('hidden');
+            document.getElementById('action-hint').innerText = "🔮 精灵悄悄话：挑战重新开始！期待你的神奇配比方案。";
+            stopConfetti();
+            updateBucketUI();
+        }
+
+        // --- QUIZ & PRACTICE ACTIONS (PAGE 3) ---
+        // Robust quiz answering with isolated HTML icon-holders to prevent Lucide re-creation null crash
+        function answerQuestion(qId, selectedOption) {
+            const correctAnswer = correctAnswers[qId];
+            const feedbackEl = document.getElementById(`feedback-${qId}`);
+            
+            // Reset borders and icon-holders back to initial lucide setup
+            document.querySelectorAll(`#q-block-${qId} .quiz-opt`).forEach(btn => {
+                btn.className = "quiz-opt w-full text-left p-3 rounded-xl border border-slate-100 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition-colors flex justify-between items-center";
+                const holder = btn.querySelector('.icon-holder');
+                if (holder) {
+                    holder.innerHTML = `<i data-lucide="circle" class="w-4 h-4 opacity-30"></i>`;
+                }
+            });
+
+            const selectedBtn = document.getElementById(`opt-${qId}-${selectedOption}`);
+            const selectedHolder = selectedBtn.querySelector('.icon-holder');
+
+            if (selectedOption === correctAnswer) {
+                selectedBtn.className = "quiz-opt w-full text-left p-3 bg-emerald-50 border-2 border-emerald-400 text-emerald-900 text-xs font-black rounded-xl transition-all flex justify-between items-center animate__animated animate__pulse";
+                if (selectedHolder) {
+                    selectedHolder.innerHTML = `<i data-lucide="check-circle" class="w-4 h-4 text-emerald-600"></i>`;
+                }
+                feedbackEl.className = "text-xs font-extrabold mt-2 text-emerald-600 block";
+                feedbackEl.innerText = "🎉 回答完全正确！";
+                answeredQuestions[qId] = true;
+            } else {
+                selectedBtn.className = "quiz-opt w-full text-left p-3 bg-rose-50 border-2 border-rose-400 text-rose-900 text-xs font-black rounded-xl transition-all flex justify-between items-center animate__animated animate__shakeX";
+                if (selectedHolder) {
+                    selectedHolder.innerHTML = `<i data-lucide="x-circle" class="w-4 h-4 text-rose-500"></i>`;
+                }
+                feedbackEl.className = "text-xs font-extrabold mt-2 text-rose-500 block";
+                feedbackEl.innerText = "❌ 哎呀，再思考一下，从故事里寻找线索！";
+                answeredQuestions[qId] = false;
+            }
+            lucide.createIcons();
+        }
+
+        // --- VOCABULARY MATCHING INTERACTIVE LOGIC ---
+        function shuffleArray(array) {
+            return array.sort(() => Math.random() - 0.5);
+        }
+
+        function initVocabularyGame() {
+            const englishList = document.getElementById('vocab-english-list');
+            const chineseList = document.getElementById('vocab-chinese-list');
+            
+            englishList.innerHTML = '';
+            chineseList.innerHTML = '';
+            matchedPairs = [];
+            selectedEnglish = null;
+            selectedChinese = null;
+
+            const shuffledEnglish = shuffleArray([...originalWords]);
+            const shuffledChinese = shuffleArray([...originalWords]);
+
+            shuffledEnglish.forEach(item => {
+                const btn = document.createElement('button');
+                btn.id = `en-${item.id}`;
+                btn.className = "w-full p-3 bg-indigo-50/50 border-2 border-indigo-100 rounded-xl text-xs font-black text-indigo-900 shadow-sm transition-all text-center hover:scale-[1.02] active:scale-95";
+                btn.innerText = item.en;
+                btn.onclick = () => {
+                    speakWord(item.en); // Play audio on click
+                    selectCard('en', item.id);
+                };
+                englishList.appendChild(btn);
+            });
+
+            shuffledChinese.forEach(item => {
+                const btn = document.createElement('button');
+                btn.id = `cn-${item.id}`;
+                btn.className = "w-full p-3 bg-purple-50/50 border-2 border-purple-100 rounded-xl text-xs font-black text-purple-900 shadow-sm transition-all text-center hover:scale-[1.02] active:scale-95";
+                btn.innerText = item.cn;
+                btn.onclick = () => selectCard('cn', item.id);
+                chineseList.appendChild(btn);
+            });
+        }
+
+        function selectCard(prefix, id) {
+            if (matchedPairs.includes(id)) return;
+
+            if (prefix === 'en') {
+                if (selectedEnglish) {
+                    document.getElementById(`en-${selectedEnglish}`).className = "w-full p-3 bg-indigo-50/50 border-2 border-indigo-100 rounded-xl text-xs font-black text-indigo-900 shadow-sm transition-all text-center";
+                }
+                selectedEnglish = id;
+                document.getElementById(`en-${id}`).className = "w-full p-3 bg-yellow-100 border-2 border-yellow-300 rounded-xl text-xs font-black text-yellow-900 shadow-md text-center ring-2 ring-yellow-200 animate__animated animate__pulse animate__infinite";
+            } else {
+                if (selectedChinese) {
+                    document.getElementById(`cn-${selectedChinese}`).className = "w-full p-3 bg-purple-50/50 border-2 border-purple-100 rounded-xl text-xs font-black text-purple-900 shadow-sm transition-all text-center";
+                }
+                selectedChinese = id;
+                document.getElementById(`cn-${id}`).className = "w-full p-3 bg-yellow-100 border-2 border-yellow-300 rounded-xl text-xs font-black text-yellow-900 shadow-md text-center ring-2 ring-yellow-200 animate__animated animate__pulse animate__infinite";
+            }
+
+            if (selectedEnglish && selectedChinese) {
+                if (selectedEnglish === selectedChinese) {
+                    matchedPairs.push(selectedEnglish);
+                    setSuccessCard('en', selectedEnglish);
+                    setSuccessCard('cn', selectedChinese);
+                } else {
+                    setErrorCard('en', selectedEnglish);
+                    setErrorCard('cn', selectedChinese);
+                    const oldEn = selectedEnglish;
+                    const oldCn = selectedChinese;
+                    setTimeout(() => {
+                        resetCardStyle('en', oldEn);
+                        resetCardStyle('cn', oldCn);
+                    }, 800);
+                }
+                selectedEnglish = null;
+                selectedChinese = null;
+            }
+        }
+
+        function resetCardStyle(prefix, id) {
+            const btn = document.getElementById(`${prefix}-${id}`);
+            if (!btn) return;
+            if (prefix === 'en') {
+                btn.className = "w-full p-3 bg-indigo-50/50 border-2 border-indigo-100 rounded-xl text-xs font-black text-indigo-900 shadow-sm transition-all text-center";
+            } else {
+                btn.className = "w-full p-3 bg-purple-50/50 border-2 border-purple-100 rounded-xl text-xs font-black text-purple-900 shadow-sm transition-all text-center";
+            }
+        }
+
+        function setSuccessCard(prefix, id) {
+            const btn = document.getElementById(`${prefix}-${id}`);
+            btn.className = "w-full p-3 bg-emerald-500 border-2 border-emerald-600 rounded-xl text-xs font-black text-white shadow-inner text-center animate__animated animate__bounceIn pointer-events-none";
+            btn.innerHTML = btn.innerText + " ✅";
+        }
+
+        function setErrorCard(prefix, id) {
+            const btn = document.getElementById(`${prefix}-${id}`);
+            btn.className = "w-full p-3 bg-rose-500 border-2 border-rose-600 rounded-xl text-xs font-black text-white shadow-inner text-center animate__animated animate__shakeX";
+        }
+
+        // --- CUSTOM ALERT DIALOG CONTROLS ---
+        function openMagicAlert(reasons) {
+            const modal = document.getElementById('magic-alert-modal');
+            const textBox = document.getElementById('magic-alert-text');
+            textBox.innerHTML = reasons.map(r => `<div>⭐ ${r}</div>`).join('');
+            modal.classList.remove('hidden');
+        }
+
+        function closeMagicAlert() {
+            document.getElementById('magic-alert-modal').classList.add('hidden');
+        }
+
+        // --- SUBMIT PRACTICE OVERALL CHALLENGE ---
+        function submitPracticeChallenge() {
+            const q1Correct = answeredQuestions[1];
+            const q2Correct = answeredQuestions[2];
+            const vocabComplete = matchedPairs.length === originalWords.length;
+            const gameComplete = isGameWon; // Check if level 2 was actually beaten
+
+            if (q1Correct && q2Correct && vocabComplete && gameComplete) {
+                // Success: Trigger cute complete overlay & celebration
+                document.getElementById('practice-win-overlay').classList.remove('hidden');
+                startConfetti();
+            } else {
+                // Construct beautiful custom alert reason list
+                let errors = [];
+                if (!gameComplete) errors.push("需要在第二关配制出正好 4 升果汁");
+                if (!q1Correct) errors.push("魔法故事提问 Q1 回答正确");
+                if (!q2Correct) errors.push("魔法故事提问 Q2 回答正确");
+                if (!vocabComplete) errors.push("连连看卡片全部连线配对");
+
+                openMagicAlert(errors);
+            }
+        }
+
+        // --- CONFETTI ANIMATOR ---
+        let confettiInterval = null;
+        function startConfetti() {
+            const container = document.getElementById('confetti-container');
+            container.classList.remove('hidden');
+            const colors = ['#f43f5e', '#3b82f6', '#10b981', '#eab308', '#a855f7', '#ff7849'];
+            
+            confettiInterval = setInterval(() => {
+                const piece = document.createElement('div');
+                piece.className = 'confetti';
+                piece.style.left = Math.random() * 100 + 'vw';
+                piece.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                piece.style.transform = `scale(${Math.random() * 0.6 + 0.5})`;
+                piece.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                container.appendChild(piece);
+                
+                setTimeout(() => piece.remove(), 4000);
+            }, 120);
+        }
+
+        function stopConfetti() {
+            if (confettiInterval) {
+                clearInterval(confettiInterval);
+                confettiInterval = null;
+            }
+            const container = document.getElementById('confetti-container');
+            container.innerHTML = '';
+            container.classList.add('hidden');
+        }
+
+        // --- INITIALIZATION ---
+        window.onload = function() {
+            switchPage(1);
+            updateBucketUI();
+            initVocabularyGame();
+        };
+    </script>
+<div onclick="window.location.href='index.html';" style="position: fixed; bottom: 24px; right: 24px; z-index: 2147483647; background: white; border: 4px solid #8b5cf6; color: #6d28d9; font-family: 'Noto Sans SC', sans-serif; font-weight: 900; font-size: 16px; padding: 12px 24px; border-radius: 50px; box-shadow: 0 10px 25px rgba(139,92,246,0.3); transition: transform 0.2s; cursor: pointer; pointer-events: auto;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+        🏠 返回选关大厅
+    </div>
+</body>
+</html>

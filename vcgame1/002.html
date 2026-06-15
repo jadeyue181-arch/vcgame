@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>儿童逻辑大冒险：第二关 - 森林河川挑战</title>
+    <!-- 引入 Tailwind CSS 用于精美的现代 UI 设计 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入 Google Fonts 提升中英文字体质感 -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Noto+Sans+SC:wght@400;700;900&display=swap" rel="stylesheet">
+    <!-- FontAwesome 用于可爱图标 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Noto Sans SC', 'Fredoka One', sans-serif;
+            background: linear-gradient(135deg, #e0f2fe 0%, #f0fdf4 100%);
+            user-select: none;
+        }
+        /* 船只在水面温柔起伏的阻尼动画 */
+        .bobbing-raft {
+            animation: raftBob 3.5s ease-in-out infinite;
+        }
+        @keyframes raftBob {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-8px) rotate(1deg); }
+        }
+        .wiggle:hover {
+            animation: wiggle 0.5s ease-in-out;
+        }
+        @keyframes wiggle {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-5deg); }
+            75% { transform: rotate(5deg); }
+        }
+        /* 船移动的平滑过渡 */
+        .raft-transition {
+            transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-between p-4 overflow-x-hidden">
+
+    <!-- 顶部导航和进度指示器 -->
+    <header class="w-full max-w-4xl bg-white/90 backdrop-blur-md rounded-xl p-3 shadow-sm flex flex-col sm:flex-row justify-between items-center gap-3 border border-blue-100">
+        <div class="flex items-center gap-2">
+            <div class="bg-amber-400 text-white p-2 rounded-lg text-lg">
+                🐱🐯
+            </div>
+            <div>
+                <h1 class="text-lg md:text-xl font-extrabold text-slate-800 flex items-center gap-2">
+                    <span>第二关：猫虎河川大冒险</span>
+                </h1>
+                <p class="text-[11px] text-slate-500">经典 river-crossing 解谜大闯关</p>
+            </div>
+        </div>
+        
+        <!-- 进度步骤条 -->
+        <div class="flex items-center gap-1.5 bg-slate-100 p-1 rounded-full text-xs font-semibold">
+            <button onclick="switchPage(1)" id="btn-nav-1" class="px-3.5 py-1.5 rounded-full transition-all duration-300 bg-amber-400 text-white shadow-sm font-bold">
+                📖 绘本
+            </button>
+            <button onclick="switchPage(2)" id="btn-nav-2" class="px-3.5 py-1.5 rounded-full transition-all duration-300 text-slate-600 hover:bg-slate-200">
+                🎮 解谜
+            </button>
+            <button onclick="switchPage(3)" id="btn-nav-3" class="px-3.5 py-1.5 rounded-full transition-all duration-300 text-slate-600 hover:bg-slate-200">
+                ✏️ 单词
+            </button>
+        </div>
+    </header>
+
+    <!-- 第一部分：魔法故事书 (Page 1) -->
+    <main id="page-1" class="w-full max-w-4xl my-6 flex-grow flex flex-col md:flex-row bg-white rounded-3xl shadow-xl border border-blue-50 overflow-hidden">
+        <!-- 左侧故事插图 -->
+        <div class="w-full md:w-2/5 bg-gradient-to-br from-teal-50 to-blue-100 p-6 flex flex-col justify-center items-center relative min-h-[260px]">
+            <svg class="w-48 h-48 md:w-56 md:h-56" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="100" cy="100" r="90" fill="#f0fdff" stroke="#bae6fd" stroke-width="4"/>
+                <path d="M10 130 Q 50 120, 100 130 T 190 130 L 190 190 L 10 190 Z" fill="#38bdf8" opacity="0.6"/>
+                <path d="M10 145 Q 50 135, 100 145 T 190 145 L 190 190 L 10 190 Z" fill="#0284c7"/>
+                
+                <!-- 木筏 -->
+                <rect x="50" y="125" width="100" height="15" rx="5" fill="#b45309" stroke="#78350f" stroke-width="3"/>
+                <line x1="75" y1="125" x2="75" y2="140" stroke="#78350f" stroke-width="2"/>
+                <line x1="100" y1="125" x2="100" y2="140" stroke="#78350f" stroke-width="2"/>
+                <line x1="125" y1="125" x2="125" y2="140" stroke="#78350f" stroke-width="2"/>
+
+                <!-- 探险猫咪 -->
+                <g transform="translate(60, 75)">
+                    <circle cx="20" cy="25" r="18" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
+                    <polygon points="5,12 12,2 17,11" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
+                    <polygon points="5,12 12,2 17,11" fill="#fda4af"/>
+                    <polygon points="35,12 28,2 23,11" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
+                    <polygon points="35,12 28,2 23,11" fill="#fda4af"/>
+                    <path d="M10,12 Q 20,-2, 30,12 Z" fill="#ef4444"/>
+                    <circle cx="13" cy="23" r="2.5" fill="#1e293b"/>
+                    <circle cx="27" cy="23" r="2.5" fill="#1e293b"/>
+                    <circle cx="9" cy="28" r="2" fill="#fda4af"/>
+                    <circle cx="31" cy="28" r="2" fill="#fda4af"/>
+                    <polygon points="19,26 21,26 20,28" fill="#f43f5e"/>
+                    <line x1="10" y1="28" x2="4" y2="27" stroke="#94a3b8" stroke-width="1.5"/>
+                    <line x1="10" y1="30" x2="3" y2="31" stroke="#94a3b8" stroke-width="1.5"/>
+                    <line x1="30" y1="28" x2="36" y2="27" stroke="#94a3b8" stroke-width="1.5"/>
+                    <line x1="30" y1="30" x2="37" y2="31" stroke="#94a3b8" stroke-width="1.5"/>
+                </g>
+
+                <!-- 顽皮老虎 -->
+                <g transform="translate(105, 75)">
+                    <circle cx="20" cy="25" r="18" fill="#fb923c" stroke="#c2410c" stroke-width="2"/>
+                    <circle cx="6" cy="11" r="5" fill="#fb923c" stroke="#c2410c" stroke-width="2"/>
+                    <circle cx="6" cy="11" r="2.5" fill="#ffedd5"/>
+                    <circle cx="34" cy="11" r="5" fill="#fb923c" stroke="#c2410c" stroke-width="2"/>
+                    <circle cx="34" cy="11" r="2.5" fill="#ffedd5"/>
+                    <path d="M15,10 L20,16 L25,10" fill="none" stroke="#451a03" stroke-width="2"/>
+                    <path d="M4,22 L10,22" stroke="#451a03" stroke-width="2"/>
+                    <path d="M36,22 L30,22" stroke="#451a03" stroke-width="2"/>
+                    <circle cx="13" cy="23" r="2.5" fill="#1e293b"/>
+                    <circle cx="27" cy="23" r="2.5" fill="#1e293b"/>
+                    <polygon points="18,26 22,26 20,28" fill="#451a03"/>
+                    <line x1="16" y1="11" x2="24" y2="11" stroke="#451a03" stroke-width="1.5"/>
+                    <line x1="17" y1="14" x2="23" y2="14" stroke="#451a03" stroke-width="1.5"/>
+                    <line x1="20" y1="9" x2="20" y2="15" stroke="#451a03" stroke-width="1.5"/>
+                </g>
+            </svg>
+            
+            <div class="mt-4 text-center bg-white/90 px-5 py-2.5 rounded-2xl shadow-sm border border-amber-200">
+                <p class="text-sm text-amber-800 font-bold">💡 双语词汇：Raft (木筏) | River (河流)</p>
+            </div>
+        </div>
+
+        <!-- 右侧：故事内容 -->
+        <div class="w-full md:w-3/5 p-8 flex flex-col justify-between">
+            <div>
+                <span class="text-sm font-bold text-amber-600 tracking-wider uppercase bg-amber-50 px-3 py-1 rounded-full border border-amber-200">森林里的神奇偶遇</span>
+                <h2 class="text-3xl md:text-4xl font-black text-slate-800 mt-4 mb-4">🐱 探险猫咪与 🐯 顽皮老虎</h2>
+                
+                <div class="space-y-5 text-slate-700 text-lg md:text-xl leading-relaxed">
+                    <p class="border-l-4 border-emerald-400 pl-3">
+                        在神秘的 <b>智慧森林</b> 里，有三只勇敢的 <strong class="text-blue-600 text-xl font-black">探险猫 (Cats)</strong> 和三只超级喜欢挠人痒痒的 <strong class="text-amber-600 text-xl font-black">顽皮虎 (Tigers)</strong>。它们要一起去寻找金色鱼糖果森林！
+                    </p>
+                    <p class="border-l-4 border-amber-400 pl-3">
+                        可是，一条宽阔的 <strong class="text-cyan-600 text-xl font-black">河流 (River)</strong> 挡住了去路。河面上只有一只小小的 <strong class="text-yellow-700 text-xl font-black">木筏 (Raft)</strong>。这个木筏 <b>最多只能坐两只动物</b>，并且必须有动物驾驶。
+                    </p>
+                    <div class="bg-red-50 p-5 rounded-xl border border-red-100 text-red-800 text-base md:text-lg">
+                        <strong class="text-red-600 flex items-center gap-1.5 font-bold mb-2">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                            <span>关键游戏规则：</span>
+                        </strong>
+                        小老虎们太活泼了！如果 <b>在任何一个岸边</b>，小老虎的数量 <b>多于</b> 小猫咪，它们就会兴奋地围过去对猫咪进行 <strong class="text-pink-600 font-extrabold">“疯狂挠痒痒”</strong>！猫咪一痒就会掉进河里，挑战就失败啦！（不过，如果岸边只有老虎，没有猫咪，那就是安全的哦！）
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-8 flex flex-col sm:flex-row gap-4">
+                <button onclick="switchPage(2)" class="flex-grow bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-black text-lg py-4 px-8 rounded-2xl shadow-lg transform hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2">
+                    <span>开始挑战游戏</span>
+                    <i class="fa-solid fa-gamepad text-xl"></i>
+                </button>
+                <button onclick="switchPage(3)" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-base py-4 px-6 rounded-2xl transition-all flex items-center justify-center gap-2">
+                    <span>跳过直接做题</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- 第二部分：趣味解谜游戏 (Page 2) -->
+    <main id="page-2" class="w-full max-w-4xl my-6 flex-grow flex flex-col bg-white rounded-3xl shadow-xl border border-blue-50 overflow-hidden hidden">
+        <!-- 控制栏（步数、撤销、重置、攻略提示） -->
+        <div class="bg-slate-50 border-b border-slate-100 p-4 flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center gap-4">
+                <div class="bg-blue-100 px-5 py-2.5 rounded-full text-blue-800 font-black text-lg">
+                    👣 步数：<span id="step-counter" class="text-xl text-blue-900 font-black">0</span>
+                </div>
+                <!-- 状态提示气泡 -->
+                <div id="game-status-bubble" class="text-base bg-emerald-100 text-emerald-800 font-black px-5 py-2.5 rounded-full animate-bounce">
+                    ✅ 状态安全
+                </div>
+            </div>
+            
+            <div class="flex flex-wrap items-center gap-2">
+                <button onclick="openHintModal()" class="bg-amber-100 hover:bg-amber-200 text-amber-800 font-black py-2 px-4 rounded-xl border border-amber-300 text-base flex items-center gap-1.5 shadow-sm transition-all active:scale-95">
+                    <i class="fa-solid fa-lightbulb"></i>
+                    <span>💡 寻求帮助</span>
+                </button>
+                <button onclick="undoMove()" class="bg-white hover:bg-slate-100 text-slate-700 font-black py-2 px-4 rounded-xl border border-slate-200 text-base flex items-center gap-1 shadow-sm transition-all active:scale-95">
+                    <i class="fa-solid fa-rotate-left"></i>
+                    <span>撤销一招</span>
+                </button>
+                <button onclick="resetGame()" class="bg-rose-50 hover:bg-rose-100 text-rose-700 font-black py-2 px-4 rounded-xl border border-rose-200 text-base flex items-center gap-1 shadow-sm transition-all active:scale-95">
+                    <i class="fa-solid fa-arrow-rotate-right"></i>
+                    <span>重置游戏</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- 游戏主舞台 (大河) - 纯净镜面渐变深邃蓝川，零杂乱更突出两岸特色 -->
+        <div class="relative flex-grow min-h-[460px] bg-gradient-to-b from-[#0e7490] via-[#0284c7] to-[#0369a1] p-4 flex flex-col justify-between overflow-hidden">
+            
+            <!-- 主游戏区：左岸 - 河流 - 右岸（添加了 translate-y-6 让它们向下平移一些） -->
+            <div class="flex justify-between h-full items-stretch relative my-8">
+                
+                <!-- 【左岸】茂密丛林装饰升级（加上了 translate-y-6 向下移动） -->
+                <div id="left-bank" class="w-1/4 bg-gradient-to-b from-[#86efac] to-[#15803d] border-r-8 border-amber-800 rounded-r-3xl flex flex-col justify-end p-2 pb-6 gap-2 z-10 min-h-[350px] relative shadow-2xl transform translate-y-6">
+                    <!-- 左岸茂密大森林，树木大大增加！ -->
+                    <div class="absolute top-2 left-2 text-3xl opacity-90 select-none pointer-events-none tracking-wide whitespace-nowrap">🌲🌲🌳🌲🌳🌲</div>
+                    <!-- 停靠的小木头码头 -->
+                    <div class="absolute right-0 bottom-8 w-6 h-16 bg-amber-900/90 rounded-l-md border-y border-l border-amber-950 flex flex-col justify-around py-1 shadow-md">
+                        <div class="w-4 h-1 bg-amber-950/40 rounded"></div>
+                        <div class="w-4 h-1 bg-amber-950/40 rounded"></div>
+                    </div>
+                    <div class="text-center font-black text-white text-base mb-2 drop-shadow-md">👈 左岸 (出发地)</div>
+                    <div id="left-animals" class="flex flex-wrap content-end justify-center gap-2 z-10"></div>
+                </div>
+
+                <!-- 【中流：木筏与大河】 -->
+                <div class="flex-grow relative flex items-center justify-center">
+                    <!-- 木筏容器（尺寸为 w-56[14rem] 的精美圆木） -->
+                    <div id="raft-container" class="absolute w-56 h-32 flex flex-col items-center justify-end raft-transition bobbing-raft" style="left: 8%;">
+                        <!-- 乘客舱 -->
+                        <div id="boat-animals" class="flex justify-center gap-3 mb-2.5 w-full min-h-[70px]"></div>
+                        
+                        <!-- 木筏主体：由精致的 3D 卡通矢量圆木木筏 SVG 构建 -->
+                        <div id="raft-body" class="w-full relative cursor-pointer" onclick="sailRaft()">
+                            <!-- 3D卡通圆木堆 SVG -->
+                            <svg viewBox="0 0 220 52" class="w-full drop-shadow-lg filter">
+                                <defs>
+                                    <linearGradient id="log-grad-1" x1="0%" y1="0%" x2="0%" y2="100%">
+                                        <stop offset="0%" stop-color="#b45309"/>
+                                        <stop offset="100%" stop-color="#78350f"/>
+                                    </linearGradient>
+                                    <linearGradient id="log-grad-2" x1="0%" y1="0%" x2="0%" y2="100%">
+                                        <stop offset="0%" stop-color="#d97706"/>
+                                        <stop offset="100%" stop-color="#92400e"/>
+                                    </linearGradient>
+                                </defs>
+                                <!-- 圆木 1 -->
+                                <rect x="8" y="2" width="204" height="9" rx="4.5" fill="url(#log-grad-1)" stroke="#451a03" stroke-width="1.5"/>
+                                <circle cx="12" cy="6.5" r="3" fill="#451a03" opacity="0.3"/>
+                                <circle cx="208" cy="6.5" r="3" fill="#451a03" opacity="0.3"/>
+                                <!-- 圆木 2 -->
+                                <rect x="5" y="11" width="210" height="10" rx="5" fill="url(#log-grad-2)" stroke="#451a03" stroke-width="1.5"/>
+                                <circle cx="10" cy="16" r="3.5" fill="#451a03" opacity="0.3"/>
+                                <circle cx="210" cy="16" r="3.5" fill="#451a03" opacity="0.3"/>
+                                <!-- 圆木 3（主圆木） -->
+                                <rect x="2" y="21" width="216" height="11" rx="5.5" fill="url(#log-grad-1)" stroke="#451a03" stroke-width="2"/>
+                                <circle cx="8" cy="26.5" r="4" fill="#451a03" opacity="0.3"/>
+                                <circle cx="212" cy="26.5" r="4" fill="#451a03" opacity="0.3"/>
+                                <!-- 圆木 4 -->
+                                <rect x="5" y="32" width="210" height="10" rx="5" fill="url(#log-grad-2)" stroke="#451a03" stroke-width="1.5"/>
+                                <circle cx="10" cy="37" r="3.5" fill="#451a03" opacity="0.3"/>
+                                <circle cx="210" cy="37" r="3.5" fill="#451a03" opacity="0.3"/>
+                                <!-- 圆木 5 -->
+                                <rect x="8" y="42" width="204" height="9" rx="4.5" fill="url(#log-grad-1)" stroke="#451a03" stroke-width="1.5"/>
+                                <circle cx="12" cy="46.5" r="3" fill="#451a03" opacity="0.3"/>
+                                <circle cx="208" cy="46.5" r="3" fill="#451a03" opacity="0.3"/>
+                                
+                                <!-- 绑扎麻绳 -->
+                                <rect x="42" y="1" width="5" height="50" rx="1.5" fill="#fed7aa" opacity="0.9" stroke="#7c2d12" stroke-width="1"/>
+                                <rect x="173" y="1" width="5" height="50" rx="1.5" fill="#fed7aa" opacity="0.9" stroke="#7c2d12" stroke-width="1"/>
+                                
+                                <!-- 荧光文字：木筏 🛶 Raft -->
+                                <text x="50%" y="31" font-family="'Fredoka One', 'Noto Sans SC'" font-size="12" font-weight="900" fill="#fffbeb" text-anchor="middle" letter-spacing="1" drop-shadow="0px 1px 2px rgba(0,0,0,0.8)">木筏 🛶 Raft</text>
+                            </svg>
+                            <!-- 木筏四周逼真涟漪效果 -->
+                            <div class="absolute -bottom-3 left-6 right-6 h-2 bg-white/40 rounded-full animate-ping opacity-60"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 【右岸】诱人梦幻糖果林装饰升级（加上了 translate-y-6 向下移动，且取消了一个糖果，显示为 🍭🍬🍩🧁✨🍬） -->
+                <div id="right-bank" class="w-1/4 bg-gradient-to-b from-[#a7f3d0] to-[#047857] border-l-8 border-amber-800 rounded-l-3xl flex flex-col justify-end p-2 pb-6 gap-2 z-10 min-h-[350px] relative shadow-2xl transform translate-y-6">
+                    <!-- 右岸糖果森林，糖果礼盒数量经过协调减少了一个 -->
+                    <div class="absolute top-2 right-2 text-3xl opacity-90 select-none pointer-events-none tracking-wide whitespace-nowrap">🍭🍬🍩🧁✨🍬</div>
+                    <!-- 停靠的小木头码头 -->
+                    <div class="absolute left-0 bottom-8 w-6 h-16 bg-amber-900/90 rounded-r-md border-y border-r border-amber-950 flex flex-col justify-around py-1 shadow-md">
+                        <div class="w-4 h-1 bg-amber-950/40 rounded"></div>
+                        <div class="w-4 h-1 bg-amber-950/40 rounded"></div>
+                    </div>
+                    <div class="text-center font-black text-white text-base mb-2 drop-shadow-md">👉 右岸 (糖果林)</div>
+                    <div id="right-animals" class="flex flex-wrap content-end justify-center gap-2 z-10"></div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- 💡 寻求帮助之：第一阶段 提示框 -->
+        <div id="hint-modal" class="hidden absolute inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div class="bg-white rounded-3xl max-w-md w-full p-6 text-center shadow-2xl border-4 border-blue-400 animate-[bounce_1s_1]">
+                <div class="text-4xl mb-2">💡 逻辑大仙提示</div>
+                <h3 class="text-xl font-bold text-slate-800 mb-3">要解开谜题，这里有几个重要的技巧哦：</h3>
+                <div class="text-left text-sm text-slate-600 space-y-2 mb-6 bg-blue-50 p-4 rounded-xl border border-blue-100">
+                    <p>✨ <b>技巧一</b>：第一步，一定要尝试让两只老虎先过去，或者带一只猫咪和老虎去？</p>
+                    <p>✨ <b>技巧二</b>：老虎划船技术很好！让它们承担大部分“划船折返送人”的任务。</p>
+                    <p>✨ <b>技巧三</b>：千万不要害怕！有时候，为了保证岸上猫咪的安全，你需要把已经过河的猫咪<b>再接回来一些</b>哦！</p>
+                </div>
+                <div class="flex flex-col gap-2">
+                    <button onclick="openAnswerModal()" class="w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-black py-3 rounded-xl transition-all shadow-md">
+                        👉 显示完美通关步骤
+                    </button>
+                    <button onclick="closeHintModal()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2 rounded-xl transition-all">
+                        自己试试看 🎒
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 🔑 寻求帮助之：第二阶段 答案框 -->
+        <div id="answer-modal" class="hidden absolute inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div class="bg-white rounded-3xl max-w-lg w-full p-6 text-center shadow-2xl border-4 border-emerald-400 relative overflow-hidden">
+                <div class="text-4xl mb-2">📜 11步通关完美答案</div>
+                <h3 class="text-sm text-slate-500 mb-4">按以下步骤操作，就能完美护送所有小动物渡河：</h3>
+                
+                <div class="text-left text-xs md:text-sm font-medium text-slate-700 space-y-1 bg-emerald-50 p-4 rounded-xl border border-emerald-100 max-h-[240px] overflow-y-auto">
+                    <p>🐾 <b>第1步</b>：运送 <b>两只老虎</b> 到右岸（右岸：2虎）</p>
+                    <p>🐾 <b>第2步</b>：让 <b>一只老虎</b> 独自划船返回（右岸：1虎）</p>
+                    <p>🐾 <b>第3步</b>：再次运送 <b>两只老虎</b> 到右岸（右岸：3虎）</p>
+                    <p>🐾 <b>第4步</b>：让 <b>一只老虎</b> 独自划船返回（右岸：2虎）</p>
+                    <p>🐾 <b>第5步</b>：运送 <b>两只猫咪</b> 到右岸（右岸：2猫，2虎）</p>
+                    <p>🐾 <b>第6步</b>：带 <b>一只猫咪和一只老虎</b> 返回左岸（右岸：1猫，1虎）</p>
+                    <p>🐾 <b>第7步</b>：运送 <b>两只猫咪</b> 到右岸（右岸：3猫，1虎）</p>
+                    <p>🐾 <b>第8步</b>：让 <b>一只老虎</b> 独自划船返回（右岸：3猫，0虎）</p>
+                    <p>🐾 <b>第9步</b>：运送 <b>两只老虎</b> 到右岸（右岸：3猫，2虎）</p>
+                    <p>🐾 <b>第10步</b>：让 <b>一只老虎</b> 独自划船返回（右岸：3猫，1虎）</p>
+                    <p>🐾 <b>第11步</b>：带 <b>两只老虎</b> 去右岸，全员大团圆！ 🎉</p>
+                </div>
+                
+                <div class="mt-6">
+                    <button onclick="closeAnswerModal()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-3 rounded-xl transition-all shadow-md">
+                        关闭答案，亲自挑战！ 🚀
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 游戏结束/挠痒痒弹窗 -->
+        <div id="game-modal" class="hidden absolute inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div class="bg-white rounded-3xl max-w-md w-full p-8 text-center shadow-2xl border-4 border-amber-400 animate-[bounce_1s_1]">
+                <div id="modal-icon" class="text-6xl mb-4">😹</div>
+                <h3 id="modal-title" class="text-2xl font-bold text-slate-800 mb-2">哎呀！猫咪被挠痒痒了！</h3>
+                <p id="modal-desc" class="text-slate-600 text-sm mb-6 leading-relaxed">
+                    在某个岸边，老虎的数量比小猫多！它们扑上来给小猫疯狂挠痒痒，小猫笑得掉进了河里！快来重新挑战。
+                </p>
+                <div class="flex gap-4">
+                    <button onclick="resetGame()" class="flex-1 bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-6 rounded-2xl transition-all">
+                        再试一次 🔄
+                    </button>
+                    <button onclick="switchPage(1)" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3 px-6 rounded-2xl transition-all">
+                        重看绘本 📖
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 闯关成功弹窗 -->
+        <div id="win-modal" class="hidden absolute inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div class="bg-gradient-to-b from-amber-50 to-orange-100 rounded-3xl max-w-lg w-full p-8 text-center shadow-2xl border-4 border-yellow-400 relative overflow-hidden">
+                <div class="absolute -top-12 -left-12 w-24 h-24 bg-yellow-300 rounded-full opacity-20 blur-xl"></div>
+                <div class="absolute -bottom-12 -right-12 w-32 h-32 bg-orange-400 rounded-full opacity-20 blur-xl"></div>
+                
+                <div class="text-7xl mb-4 animate-[bounce_1.5s_infinite]">🏆</div>
+                <h3 class="text-3xl font-black text-amber-800 mb-2">大获全胜！太聪明啦！</h3>
+                <p class="text-slate-700 text-base mb-6 leading-relaxed">
+                    你仅用了 <strong id="win-steps" class="text-xl text-emerald-600">0</strong> 步，就成功把所有小猫和小老虎安全护送到了彼岸！完美的策略！
+                </p>
+                <div class="bg-white/80 border border-amber-200 p-4 rounded-2xl text-xs text-amber-900 mb-6 text-left space-y-1">
+                    <p class="font-bold">✨ 你学到了以下思维方法：</p>
+                    <p>1. <b>约束条件管理</b>：时刻核对老虎和猫咪的动态比例。</p>
+                    <p>2. <b>逆向折返策略</b>：有时必须带动物回到原岸，才能创造安全渡河的安全差。</p>
+                </div>
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <button onclick="resetGame()" class="flex-1 bg-white hover:bg-slate-100 text-slate-700 font-bold py-4 px-6 rounded-2xl transition-all border border-slate-200 shadow">
+                        再玩一次 🔄
+                    </button>
+                    <button onclick="switchPage(3)" class="flex-1 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-black py-4 px-6 rounded-2xl transition-all shadow-lg shadow-emerald-200">
+                        去第3关：大闯关 ✏️
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 第三部分：英文单词与阅读大闯关 (Page 3) -->
+    <main id="page-3" class="w-full max-w-4xl my-6 flex-grow flex flex-col md:flex-row bg-white rounded-3xl shadow-xl border border-blue-50 overflow-hidden hidden">
+        <!-- 左侧：阅读测试 -->
+        <div class="w-full md:w-1/2 p-8 border-r border-slate-100 flex flex-col justify-between">
+            <div>
+                <span class="text-sm font-bold text-indigo-600 tracking-wider uppercase bg-indigo-50 px-3 py-1 rounded-full border border-indigo-200">Part A: 阅读理解测试</span>
+                <h3 class="text-2xl font-black text-slate-800 mt-4 mb-6">📖 看故事，答问题</h3>
+                
+                <!-- 问题 1 -->
+                <div class="mb-6">
+                    <p class="text-base md:text-lg font-black text-slate-700 mb-3 flex items-start gap-2">
+                        <span class="bg-indigo-100 text-indigo-800 text-xs px-2.5 py-1 rounded-full mt-0.5">Q1</span>
+                        <span>如果小猫咪数量多于小老虎，会发生“挠痒痒危机”吗？</span>
+                    </p>
+                    <div class="grid grid-cols-1 gap-2 pl-6">
+                        <button onclick="answerQuiz('q1', 'A')" id="q1-A" class="quiz-btn w-full text-left text-sm md:text-base p-4 rounded-xl border border-slate-200 hover:bg-slate-50 transition-all font-bold flex justify-between items-center">
+                            <span>A. 会，小猫咪会去挠老虎痒痒</span>
+                            <span class="feedback-icon"></span>
+                        </button>
+                        <button onclick="answerQuiz('q1', 'B')" id="q1-B" class="quiz-btn w-full text-left text-sm md:text-base p-4 rounded-xl border border-slate-200 hover:bg-slate-50 transition-all font-bold flex justify-between items-center">
+                            <span>B. 不会，只有老虎多于猫咪时才会挠痒痒</span>
+                            <span class="feedback-icon"></span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 问题 2 -->
+                <div class="mb-6">
+                    <p class="text-base md:text-lg font-black text-slate-700 mb-3 flex items-start gap-2">
+                        <span class="bg-indigo-100 text-indigo-800 text-xs px-2.5 py-1 rounded-full mt-0.5">Q2</span>
+                        <span>如果木筏上没有小动物，木筏可以自己划动吗？</span>
+                    </p>
+                    <div class="grid grid-cols-1 gap-2 pl-6">
+                        <button onclick="answerQuiz('q2', 'A')" id="q2-A" class="quiz-btn w-full text-left text-sm md:text-base p-4 rounded-xl border border-slate-200 hover:bg-slate-50 transition-all font-bold flex justify-between items-center">
+                            <span>A. 可以，木筏是智能自动化的</span>
+                            <span class="feedback-icon"></span>
+                        </button>
+                        <button onclick="answerQuiz('q2', 'B')" id="q2-B" class="quiz-btn w-full text-left text-sm md:text-base p-4 rounded-xl border border-slate-200 hover:bg-slate-50 transition-all font-bold flex justify-between items-center">
+                            <span>B. 不可以，必须有至少一只动物驾驶木筏</span>
+                            <span class="feedback-icon"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 反馈区域 -->
+            <div id="quiz-status" class="bg-indigo-50 p-4 rounded-2xl border border-indigo-100 text-sm text-indigo-800 hidden">
+                🎉 回答正确！思维满分！继续完成右侧的英文连连看吧！
+            </div>
+        </div>
+
+        <!-- 右侧：英文连连看 -->
+        <div class="w-full md:w-1/2 p-8 bg-slate-50 flex flex-col justify-between">
+            <div>
+                <span class="text-sm font-bold text-emerald-600 tracking-wider uppercase bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">Part B: 单词配对消消乐</span>
+                <h3 class="text-2xl font-black text-slate-800 mt-4 mb-2">🐯 英文与动物大对决</h3>
+                <p class="text-sm text-slate-500 mb-6">点击左边的英文单词，再点击右边匹配的中文或图标，全部连对即可通关！</p>
+                
+                <div class="grid grid-cols-2 gap-4 relative">
+                    <div class="space-y-3" id="vocab-left"></div>
+                    <div class="space-y-3" id="vocab-right"></div>
+                </div>
+            </div>
+
+            <!-- 通关荣誉证书激活入口 -->
+            <div class="mt-8">
+                <button id="finish-stage-btn" onclick="checkFinalCompletion()" class="w-full bg-slate-300 text-slate-600 font-bold py-4 px-6 rounded-2xl cursor-not-allowed transition-all duration-300 flex items-center justify-center gap-2" disabled>
+                    <span>请先完成解密游戏与所有连线题目</span>
+                    <i class="fa-solid fa-lock text-base"></i>
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- 证书弹窗 -->
+    <div id="cert-modal" class="hidden fixed inset-0 bg-slate-900/90 backdrop-blur-md z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-xl w-full p-8 text-center shadow-2xl border-8 border-double border-amber-400 relative">
+            <div class="absolute top-4 right-4 text-amber-300 text-4xl">⭐</div>
+            <div class="absolute bottom-4 left-4 text-amber-300 text-4xl">⭐</div>
+            
+            <div class="text-7xl mb-4">📜</div>
+            <h3 class="text-3xl font-black text-slate-800 mb-1 tracking-wide">逻辑大王荣誉证书</h3>
+            <p class="text-xs text-slate-400 uppercase tracking-widest mb-6">Certificate of Logical Achievement</p>
+            
+            <div class="bg-amber-50/60 border border-amber-200 p-6 rounded-2xl mb-6 relative animate-[pulse_2s_infinite]">
+                <p class="text-sm md:text-base text-slate-700 leading-relaxed font-bold">
+                    鉴于你在 <b>《智慧森林：猫虎河川大冒险》</b> 挑战中：<br>
+                    成功运用了<span class="text-amber-700 font-extrabold">逻辑约束对比方法</span>与<span class="text-teal-700 font-extrabold">精妙逆向折返算法</span>，安全护送了所有小动物渡河，并且完全掌握了相关的双语故事知识。<br>
+                    特发此证，以兹鼓励！你已经是名副其实 of 逻辑大师！
+                </p>
+                <div class="mt-4 flex justify-around text-xs font-bold text-slate-400">
+                    <div>
+                        <p class="text-amber-600 text-sm">★★★★★</p>
+                        <p>逻辑指数</p>
+                    </div>
+                    <div>
+                        <p class="text-indigo-600 text-sm">★★★★★</p>
+                        <p>阅读理解</p>
+                    </div>
+                    <div>
+                        <p class="text-emerald-600 text-sm">★★★★★</p>
+                        <p>英语词汇</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-3">
+                <button onclick="restartFullChallenge()" class="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-black py-4 px-6 rounded-2xl transition-all shadow-lg text-lg">
+                    再次挑战全关 🔄
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 统一且稳健的 JavaScript 脚本控制块 -->
+    <script>
+        // 游戏核心状态
+        let gameState = {
+            currentPage: 1,
+            left: { cats: 3, tigers: 3 },
+            right: { cats: 0, tigers: 0 },
+            boat: { cats: 0, tigers: 0 },
+            boatPosition: 'left',
+            steps: 0,
+            history: [],
+            gameActive: true,
+            hasFailedOnce: false, // 记录是否失败过
+            gameBeaten: false,     // 只有通关游戏后才允许领取证书
+            quiz: {
+                q1: null,
+                q2: null,
+                matchedPairs: []
+            }
+        };
+
+        // 简易 Web Audio 音效器
+        let audioCtx;
+        function playSound(type) {
+            try {
+                if (!audioCtx) {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                if (type === 'click') {
+                    osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 0.1);
+                    gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                    gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.1);
+                } else if (type === 'win') {
+                    const freqs = [523.25, 659.25, 783.99, 1046.50];
+                    freqs.forEach((f, i) => {
+                        const o = audioCtx.createOscillator();
+                        const g = audioCtx.createGain();
+                        o.connect(g);
+                        g.connect(audioCtx.destination);
+                        o.frequency.setValueAtTime(f, audioCtx.currentTime + i * 0.1);
+                        g.gain.setValueAtTime(0.15, audioCtx.currentTime + i * 0.1);
+                        g.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + i * 0.1 + 0.4);
+                        o.start(audioCtx.currentTime + i * 0.1);
+                        o.stop(audioCtx.currentTime + i * 0.1 + 0.4);
+                    });
+                } else if (type === 'tickle' || type === 'fail') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(300, audioCtx.currentTime);
+                    osc.frequency.linearRampToValueAtTime(100, audioCtx.currentTime + 0.4);
+                    gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                    gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.4);
+                } else if (type === 'splash') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(350, audioCtx.currentTime + 0.6);
+                    gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                    gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.6);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.6);
+                }
+            } catch (e) {
+                console.log("Audio contexts blocked or error: ", e);
+            }
+        }
+
+        // 核心切换页面功能
+        function switchPage(pageNum) {
+            playSound('click');
+            
+            document.getElementById('page-1').classList.add('hidden');
+            document.getElementById('page-2').classList.add('hidden');
+            document.getElementById('page-3').classList.add('hidden');
+            document.getElementById(`page-${pageNum}`).classList.remove('hidden');
+
+            for (let i = 1; i <= 3; i++) {
+                const btn = document.getElementById(`btn-nav-${i}`);
+                if (btn) {
+                    if (i === pageNum) {
+                        btn.className = "px-5 py-2 rounded-full transition-all duration-300 bg-amber-400 text-white shadow-sm font-bold text-base";
+                    } else {
+                        btn.className = "px-5 py-2 rounded-full transition-all duration-300 text-slate-600 hover:bg-slate-200 text-base";
+                    }
+                }
+            }
+            
+            gameState.currentPage = pageNum;
+
+            if (pageNum === 2) {
+                renderGame();
+            } else if (pageNum === 3) {
+                initVocabularyMatch();
+            }
+        }
+        window.switchPage = switchPage;
+
+        // 提示与答案控制函数
+        function openHintModal() {
+            playSound('click');
+            document.getElementById('hint-modal').classList.remove('hidden');
+        }
+        window.openHintModal = openHintModal;
+
+        function closeHintModal() {
+            playSound('click');
+            document.getElementById('hint-modal').classList.add('hidden');
+        }
+        window.closeHintModal = closeHintModal;
+
+        // 点击提示面板的“完美答案”跳转
+        function openAnswerModal() {
+            playSound('click');
+            document.getElementById('hint-modal').classList.add('hidden');
+            document.getElementById('answer-modal').classList.remove('hidden');
+        }
+        window.openAnswerModal = openAnswerModal;
+
+        function closeAnswerModal() {
+            playSound('click');
+            document.getElementById('answer-modal').classList.add('hidden');
+        }
+        window.closeAnswerModal = closeAnswerModal;
+
+        // 矢量角色生成器
+        function getCatSVG(id, onClickStr) {
+            return `
+            <div id="${id}" onclick="${onClickStr}" class="w-14 h-16 flex flex-col items-center justify-center cursor-pointer transform transition-all duration-300 hover:scale-110 active:scale-90 wiggle bg-white rounded-xl shadow-md border-2 border-slate-200 p-1 relative">
+                <svg viewBox="0 0 40 40" class="w-10 h-10">
+                    <circle cx="20" cy="25" r="14" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.5"/>
+                    <polygon points="5,15 11,5 15,14" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.5"/>
+                    <polygon points="5,15 11,5 15,14" fill="#fda4af"/>
+                    <polygon points="35,15 29,5 25,14" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.5"/>
+                    <polygon points="35,15 29,5 25,14" fill="#fda4af"/>
+                    <path d="M11,15 Q 20,4, 29,15 Z" fill="#ef4444"/>
+                    <circle cx="14" cy="24" r="2" fill="#1e293b"/>
+                    <circle cx="26" cy="24" r="2" fill="#1e293b"/>
+                    <polygon points="19,27 21,27 20,28.5" fill="#f43f5e"/>
+                    <line x1="12" y1="28" x2="6" y2="27" stroke="#94a3b8" stroke-width="1"/>
+                    <line x1="12" y1="30" x2="5" y2="31" stroke="#94a3b8" stroke-width="1"/>
+                    <line x1="28" y1="28" x2="34" y2="27" stroke="#94a3b8" stroke-width="1"/>
+                    <line x1="28" y1="30" x2="35" y2="31" stroke="#94a3b8" stroke-width="1"/>
+                </svg>
+                <span class="text-[11px] font-black text-slate-600">Cat</span>
+            </div>`;
+        }
+
+        function getTigerSVG(id, onClickStr) {
+            return `
+            <div id="${id}" onclick="${onClickStr}" class="w-14 h-16 flex flex-col items-center justify-center cursor-pointer transform transition-all duration-300 hover:scale-110 active:scale-90 wiggle bg-amber-50 rounded-xl shadow-md border-2 border-amber-300 p-1 relative">
+                <svg viewBox="0 0 40 40" class="w-10 h-10">
+                    <circle cx="20" cy="25" r="14" fill="#fb923c" stroke="#c2410c" stroke-width="1.5"/>
+                    <circle cx="9" cy="14" r="4.5" fill="#fb923c" stroke="#c2410c" stroke-width="1.5"/>
+                    <circle cx="9" cy="14" r="2" fill="#ffedd5"/>
+                    <circle cx="31" cy="14" r="4.5" fill="#fb923c" stroke="#c2410c" stroke-width="1.5"/>
+                    <circle cx="31" cy="14" r="2" fill="#ffedd5"/>
+                    <path d="M16,13 L20,17 L24,13" fill="none" stroke="#451a03" stroke-width="1.5"/>
+                    <path d="M7,22 L11,22" stroke="#451a03" stroke-width="1.5"/>
+                    <path d="M33,22 L29,22" stroke="#451a03" stroke-width="1.5"/>
+                    <circle cx="14" cy="24" r="2" fill="#1e293b"/>
+                    <circle cx="26" cy="24" r="2" fill="#1e293b"/>
+                    <polygon points="19,27 21,27 20,28.5" fill="#451a03"/>
+                    <line x1="17" y1="14" x2="23" y2="14" stroke="#451a03" stroke-width="1"/>
+                    <line x1="18" y1="16" x2="22" y2="16" stroke="#451a03" stroke-width="1"/>
+                    <line x1="20" y1="12" x2="20" y2="17" stroke="#451a03" stroke-width="1"/>
+                </svg>
+                <span class="text-[11px] font-black text-amber-700">Tiger</span>
+            </div>`;
+        }
+
+        // 游戏渲染引擎
+        function renderGame() {
+            document.getElementById('step-counter').innerText = gameState.steps;
+
+            // 1. 渲染左岸
+            const leftContainer = document.getElementById('left-animals');
+            if (leftContainer) {
+                leftContainer.innerHTML = '';
+                for (let i = 0; i < gameState.left.cats; i++) {
+                    leftContainer.innerHTML += getCatSVG(`left-cat-${i}`, `boardAnimal('cats', 'left')`);
+                }
+                for (let i = 0; i < gameState.left.tigers; i++) {
+                    leftContainer.innerHTML += getTigerSVG(`left-tiger-${i}`, `boardAnimal('tigers', 'left')`);
+                }
+            }
+
+            // 2. 渲染右岸
+            const rightContainer = document.getElementById('right-animals');
+            if (rightContainer) {
+                rightContainer.innerHTML = '';
+                for (let i = 0; i < gameState.right.cats; i++) {
+                    rightContainer.innerHTML += getCatSVG(`right-cat-${i}`, `boardAnimal('cats', 'right')`);
+                }
+                for (let i = 0; i < gameState.right.tigers; i++) {
+                    rightContainer.innerHTML += getTigerSVG(`right-tiger-${i}`, `boardAnimal('tigers', 'right')`);
+                }
+            }
+
+            // 3. 渲染木筏上的动物
+            const boatContainer = document.getElementById('boat-animals');
+            if (boatContainer) {
+                boatContainer.innerHTML = '';
+                for (let i = 0; i < gameState.boat.cats; i++) {
+                    boatContainer.innerHTML += getCatSVG(`boat-cat-${i}`, `debarkAnimal('cats')`);
+                }
+                for (let i = 0; i < gameState.boat.tigers; i++) {
+                    boatContainer.innerHTML += getTigerSVG(`boat-tiger-${i}`, `debarkAnimal('tigers')`);
+                }
+            }
+
+            // 4. 计算木筏水平位置（根据 w-56[14rem] 的新宽度调整百分比，实现完美平滑贴合两岸码头）
+            const raftContainer = document.getElementById('raft-container');
+            if (raftContainer) {
+                if (gameState.boatPosition === 'left') {
+                    raftContainer.style.left = '8%';
+                } else {
+                    raftContainer.style.left = 'calc(92% - 14rem)';
+                }
+            }
+
+            // 5. 状态气泡和木筏本身的交互点亮
+            const bubble = document.getElementById('game-status-bubble');
+            const raftBody = document.getElementById('raft-body');
+            
+            const validation = checkSafetyState(gameState.left, gameState.right);
+            const onboardCount = gameState.boat.cats + gameState.boat.tigers;
+
+            if (bubble && raftBody) {
+                if (!validation.safe) {
+                    bubble.className = "text-sm bg-rose-100 text-rose-800 font-black px-4 py-2 rounded-full animate-pulse";
+                    bubble.innerHTML = "⚠️ 注意：当前岸上比例不安全（开船前请调整好哦）";
+                    raftBody.style.opacity = "0.5";
+                    raftBody.style.cursor = "not-allowed";
+                } else {
+                    if (onboardCount === 0) {
+                        bubble.className = "text-sm bg-blue-100 text-blue-800 font-black px-4 py-2 rounded-full";
+                        bubble.innerHTML = "💡 提示：请点击岸上小动物上船";
+                        raftBody.style.opacity = "0.5";
+                        raftBody.style.cursor = "not-allowed";
+                    } else {
+                        bubble.className = "text-sm bg-emerald-100 text-emerald-800 font-black px-4 py-2 rounded-full";
+                        bubble.innerHTML = "✅ 安全状态：良好！可以点击木筏渡河啦！";
+                        raftBody.style.opacity = "1";
+                        raftBody.style.cursor = "pointer";
+                    }
+                }
+            }
+        }
+        window.renderGame = renderGame;
+
+        // 登船
+        function boardAnimal(type, side) {
+            if (!gameState.gameActive) return;
+            if (gameState.boatPosition !== side) return;
+
+            const currentRaftCount = gameState.boat.cats + gameState.boat.tigers;
+            if (currentRaftCount >= 2) return;
+
+            saveHistory();
+
+            if (type === 'cats' && gameState[side].cats > 0) {
+                gameState[side].cats--;
+                gameState.boat.cats++;
+                playSound('click');
+            } else if (type === 'tigers' && gameState[side].tigers > 0) {
+                gameState[side].tigers--;
+                gameState.boat.tigers++;
+                playSound('click');
+            }
+
+            renderGame();
+        }
+        window.boardAnimal = boardAnimal;
+
+        // 手动下船
+        function debarkAnimal(type) {
+            if (!gameState.gameActive) return;
+            const side = gameState.boatPosition;
+
+            saveHistory();
+
+            if (type === 'cats' && gameState.boat.cats > 0) {
+                gameState.boat.cats--;
+                gameState[side].cats++;
+                playSound('click');
+            } else if (type === 'tigers' && gameState.boat.tigers > 0) {
+                gameState.boat.tigers--;
+                gameState[side].tigers++;
+                playSound('click');
+            }
+
+            renderGame();
+
+            // 检测大获全胜通关
+            if (gameState.right.cats === 3 && gameState.right.tigers === 3 && gameState.boat.cats === 0 && gameState.boat.tigers === 0) {
+                triggerWin();
+            }
+        }
+        window.debarkAnimal = debarkAnimal;
+
+        // 出发渡河
+        function sailRaft() {
+            if (!gameState.gameActive) return;
+            
+            const onboardCount = gameState.boat.cats + gameState.boat.tigers;
+            if (onboardCount === 0) {
+                playSound('fail');
+                return;
+            }
+
+            // 【开船判定】：仅在按下开船的刹那进行约束强判定！
+            const validation = checkSafetyState(gameState.left, gameState.right);
+            if (!validation.safe) {
+                triggerGameOver(validation.reason);
+                return;
+            }
+
+            saveHistory();
+            playSound('splash');
+
+            gameState.boatPosition = gameState.boatPosition === 'left' ? 'right' : 'left';
+            gameState.steps++;
+
+            renderGame();
+        }
+        window.sailRaft = sailRaft;
+
+        // 安全约束检测
+        function checkSafetyState(left, right) {
+            if (left.cats > 0 && left.cats < left.tigers) {
+                return { safe: false, reason: "左岸的猫咪少于老虎，它们会被大老虎疯狂挠痒痒！" };
+            }
+            if (right.cats > 0 && right.cats < right.tigers) {
+                return { safe: false, reason: "右岸的猫咪少于老虎，它们会被大老虎疯狂挠痒痒！" };
+            }
+            return { safe: true };
+        }
+        window.checkSafetyState = checkSafetyState;
+
+        // 失败处理
+        function triggerGameOver(reason) {
+            playSound('tickle');
+            gameState.gameActive = false;
+            gameState.hasFailedOnce = true; // 记录失败历史
+            
+            const modal = document.getElementById('game-modal');
+            const modalDesc = document.getElementById('modal-desc');
+            if (modal && modalDesc) {
+                modalDesc.innerHTML = reason + "<br><span class='text-xs text-rose-400 mt-2 block font-medium'>策略提示：点击“撤销一招”能够帮你退回安全状态，或者点击“寻求帮助”查看答案！</span>";
+                modal.classList.remove('hidden');
+            }
+        }
+
+        // 胜利处理
+        function triggerWin() {
+            playSound('win');
+            gameState.gameActive = false;
+            gameState.gameBeaten = true; // 【完美通关成就锁解除】
+            
+            const winStepsEl = document.getElementById('win-steps');
+            const winModal = document.getElementById('win-modal');
+            if (winStepsEl && winModal) {
+                winStepsEl.innerText = gameState.steps;
+                winModal.classList.remove('hidden');
+            }
+        }
+
+        // 撤销一招
+        function saveHistory() {
+            gameState.history.push({
+                left: { ...gameState.left },
+                right: { ...gameState.right },
+                boat: { ...gameState.boat },
+                boatPosition: gameState.boatPosition,
+                steps: gameState.steps
+            });
+        }
+
+        // 撤销动作
+        function undoMove() {
+            if (gameState.history.length === 0) return;
+            const prevState = gameState.history.pop();
+            gameState.left = prevState.left;
+            gameState.right = prevState.right;
+            gameState.boat = prevState.boat;
+            gameState.boatPosition = prevState.boatPosition;
+            gameState.steps = prevState.steps;
+            gameState.gameActive = true;
+            
+            const gameModal = document.getElementById('game-modal');
+            if (gameModal) gameModal.classList.add('hidden');
+            renderGame();
+            playSound('click');
+        }
+        window.undoMove = undoMove;
+
+        // 重置游戏
+        function resetGame() {
+            gameState.left = { cats: 3, tigers: 3 };
+            gameState.right = { cats: 0, tigers: 0 };
+            gameState.boat = { cats: 0, tigers: 0 };
+            gameState.boatPosition = 'left';
+            gameState.steps = 0;
+            gameState.history = [];
+            gameState.gameActive = true;
+
+            const gameModal = document.getElementById('game-modal');
+            const winModal = document.getElementById('win-modal');
+            if (gameModal) gameModal.classList.add('hidden');
+            if (winModal) winModal.classList.add('hidden');
+            
+            renderGame();
+            playSound('click');
+        }
+        window.resetGame = resetGame;
+
+        // 答题模块逻辑
+        const quizAnswers = {
+            q1: 'B',
+            q2: 'B'
+        };
+
+        function answerQuiz(q, option) {
+            playSound('click');
+            gameState.quiz[q] = option;
+            
+            const btnA = document.getElementById(`${q}-A`);
+            const btnB = document.getElementById(`${q}-B`);
+            if (btnA && btnB) {
+                btnA.className = "quiz-btn w-full text-left text-sm md:text-base p-4 rounded-xl border border-slate-200 hover:bg-slate-50 transition-all font-bold flex justify-between items-center";
+                btnB.className = "quiz-btn w-full text-left text-sm md:text-base p-4 rounded-xl border border-slate-200 hover:bg-slate-50 transition-all font-bold flex justify-between items-center";
+            }
+
+            const selectedBtn = document.getElementById(`${q}-${option}`);
+            if (selectedBtn) {
+                const iconSpan = selectedBtn.querySelector('.feedback-icon');
+                if (option === quizAnswers[q]) {
+                    selectedBtn.className = "quiz-btn w-full text-left text-sm md:text-base p-4 rounded-xl border-2 border-emerald-500 bg-emerald-50 text-emerald-800 font-bold flex justify-between items-center";
+                    if (iconSpan) iconSpan.innerHTML = "🏆 正确";
+                    playSound('click');
+                } else {
+                    selectedBtn.className = "quiz-btn w-full text-left text-sm md:text-base p-4 rounded-xl border-2 border-rose-500 bg-rose-50 text-rose-800 font-bold flex justify-between items-center";
+                    if (iconSpan) iconSpan.innerHTML = "❌ 答错啦，再想想";
+                    playSound('fail');
+                }
+            }
+
+            checkAllQuizStatus();
+        }
+        window.answerQuiz = answerQuiz;
+
+        function checkAllQuizStatus() {
+            const q1Correct = gameState.quiz.q1 === quizAnswers.q1;
+            const q2Correct = gameState.quiz.q2 === quizAnswers.q2;
+            const statusDiv = document.getElementById('quiz-status');
+
+            if (statusDiv) {
+                if (q1Correct && q2Correct) {
+                    statusDiv.classList.remove('hidden');
+                    checkOverallReadyToSubmit();
+                } else {
+                    statusDiv.classList.add('hidden');
+                }
+            }
+        }
+
+        // 单词对对碰消消乐
+        const vocabPairs = [
+            { en: 'Cat 🐱', zh: '猫咪', id: 'cat' },
+            { en: 'Tiger 🐯', zh: '老虎', id: 'tiger' },
+            { en: 'River 🌊', zh: '河流', id: 'river' },
+            { en: 'Raft 🛶', zh: '木筏', id: 'raft' }
+        ];
+
+        let selectedLeft = null;
+        let selectedRight = null;
+
+        function initVocabularyMatch() {
+            const leftCol = document.getElementById('vocab-left');
+            const rightCol = document.getElementById('vocab-right');
+            
+            if (leftCol && rightCol) {
+                const leftShuffled = [...vocabPairs].sort(() => Math.random() - 0.5);
+                const rightShuffled = [...vocabPairs].sort(() => Math.random() - 0.5);
+
+                leftCol.innerHTML = '';
+                rightCol.innerHTML = '';
+
+                leftShuffled.forEach(pair => {
+                    leftCol.innerHTML += `
+                        <button id="left-word-${pair.id}" onclick="selectWord('left', '${pair.id}')" class="w-full bg-white hover:bg-slate-50 border border-slate-200 py-4 px-5 rounded-xl text-sm md:text-base font-bold text-slate-700 shadow-sm transition-all flex items-center justify-between">
+                            <span>${pair.en}</span>
+                            <span id="left-check-${pair.id}"></span>
+                        </button>
+                    `;
+                });
+
+                rightShuffled.forEach(pair => {
+                    rightCol.innerHTML += `
+                        <button id="right-word-${pair.id}" onclick="selectWord('right', '${pair.id}')" class="w-full bg-white hover:bg-slate-50 border border-slate-200 py-4 px-5 rounded-xl text-sm md:text-base font-bold text-slate-700 shadow-sm transition-all flex items-center justify-between">
+                            <span>${pair.zh}</span>
+                            <span id="right-check-${pair.id}"></span>
+                        </button>
+                    `;
+                });
+            }
+        }
+        window.initVocabularyMatch = initVocabularyMatch;
+
+        function selectWord(column, id) {
+            playSound('click');
+
+            if (column === 'left') {
+                if (gameState.quiz.matchedPairs.includes(id)) return;
+
+                vocabPairs.forEach(pair => {
+                    const btn = document.getElementById(`left-word-${pair.id}`);
+                    if (btn && !gameState.quiz.matchedPairs.includes(pair.id)) {
+                        btn.className = "w-full bg-white hover:bg-slate-50 border border-slate-200 py-4 px-5 rounded-xl text-sm md:text-base font-bold text-slate-700 shadow-sm transition-all flex items-center justify-between";
+                    }
+                });
+
+                selectedLeft = id;
+                const leftBtn = document.getElementById(`left-word-${id}`);
+                if (leftBtn) {
+                    leftBtn.className = "w-full bg-amber-100 border-2 border-amber-400 py-4 px-5 rounded-xl text-sm md:text-base font-bold text-amber-800 shadow-sm transition-all flex items-center justify-between";
+                }
+            } else {
+                if (gameState.quiz.matchedPairs.includes(id)) return;
+
+                vocabPairs.forEach(pair => {
+                    const btn = document.getElementById(`right-word-${pair.id}`);
+                    if (btn && !gameState.quiz.matchedPairs.includes(pair.id)) {
+                        btn.className = "w-full bg-white hover:bg-slate-50 border border-slate-200 py-4 px-5 rounded-xl text-sm md:text-base font-bold text-slate-700 shadow-sm transition-all flex items-center justify-between";
+                    }
+                });
+
+                selectedRight = id;
+                const rightBtn = document.getElementById(`right-word-${id}`);
+                if (rightBtn) {
+                    rightBtn.className = "w-full bg-amber-100 border-2 border-amber-400 py-4 px-5 rounded-xl text-sm md:text-base font-bold text-amber-800 shadow-sm transition-all flex items-center justify-between";
+                }
+            }
+
+            if (selectedLeft && selectedRight) {
+                if (selectedLeft === selectedRight) {
+                    playSound('click');
+                    const targetId = selectedLeft;
+                    gameState.quiz.matchedPairs.push(targetId);
+
+                    const leftBtn = document.getElementById(`left-word-${targetId}`);
+                    const rightBtn = document.getElementById(`right-word-${targetId}`);
+                    
+                    if (leftBtn && rightBtn) {
+                        leftBtn.className = "w-full bg-emerald-500 border border-emerald-600 py-4 px-5 rounded-xl text-sm md:text-base font-bold text-white shadow-sm flex items-center justify-between cursor-default";
+                        rightBtn.className = "w-full bg-emerald-500 border border-emerald-600 py-4 px-5 rounded-xl text-sm md:text-base font-bold text-white shadow-sm flex items-center justify-between cursor-default";
+                    }
+
+                    const leftCheck = document.getElementById(`left-check-${targetId}`);
+                    const rightCheck = document.getElementById(`right-check-${targetId}`);
+                    if (leftCheck && rightCheck) {
+                        leftCheck.innerHTML = "⭐";
+                        rightCheck.innerHTML = "⭐";
+                    }
+                } else {
+                    playSound('fail');
+                    const errLeft = selectedLeft;
+                    const errRight = selectedRight;
+                    
+                    const leftErrBtn = document.getElementById(`left-word-${errLeft}`);
+                    const rightErrBtn = document.getElementById(`right-word-${errRight}`);
+                    if (leftErrBtn && rightErrBtn) {
+                        leftErrBtn.className = "w-full bg-rose-100 border-2 border-rose-400 py-4 px-5 rounded-xl text-sm md:text-base font-bold text-rose-800 shadow-sm flex items-center justify-between animate-pulse";
+                        rightErrBtn.className = "w-full bg-rose-100 border-2 border-rose-400 py-4 px-5 rounded-xl text-sm md:text-base font-bold text-rose-800 shadow-sm flex items-center justify-between animate-pulse";
+                    }
+
+                    setTimeout(() => {
+                        const leftReset = document.getElementById(`left-word-${errLeft}`);
+                        const rightReset = document.getElementById(`right-word-${errRight}`);
+                        if (leftReset && !gameState.quiz.matchedPairs.includes(errLeft)) {
+                            leftReset.className = "w-full bg-white border border-slate-200 py-4 px-5 rounded-xl text-sm md:text-base font-bold text-slate-700 shadow-sm flex items-center justify-between";
+                        }
+                        if (rightReset && !gameState.quiz.matchedPairs.includes(errRight)) {
+                            rightReset.className = "w-full bg-white border border-slate-200 py-4 px-5 rounded-xl text-sm md:text-base font-bold text-slate-700 shadow-sm flex items-center justify-between";
+                        }
+                    }, 800);
+                }
+
+                selectedLeft = null;
+                selectedRight = null;
+                checkOverallReadyToSubmit();
+            }
+        }
+        window.selectWord = selectWord;
+
+        // 检测所有通关指标
+        function checkOverallReadyToSubmit() {
+            const q1Correct = gameState.quiz.q1 === quizAnswers.q1;
+            const q2Correct = gameState.quiz.q2 === quizAnswers.q2;
+            const allVocabMatched = gameState.quiz.matchedPairs.length === vocabPairs.length;
+            const gameBeaten = gameState.gameBeaten; // 解密关卡必须被突破
+            
+            const finishBtn = document.getElementById('finish-stage-btn');
+
+            if (finishBtn) {
+                if (q1Correct && q2Correct && allVocabMatched && gameBeaten) {
+                    finishBtn.className = "w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-black py-4 px-6 rounded-2xl cursor-pointer transform hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2 shadow-lg shadow-amber-200 text-lg";
+                    finishBtn.innerHTML = "<span>恭喜全部通关！生成荣誉证书 📜</span>";
+                    finishBtn.disabled = false;
+                } else {
+                    finishBtn.className = "w-full bg-slate-300 text-slate-600 font-bold py-4 px-6 rounded-2xl cursor-not-allowed transition-all flex items-center justify-center gap-2 text-base";
+                    
+                    if (!gameBeaten) {
+                        finishBtn.innerHTML = "<span>请先在第2页完成小动物过河解密 🎮</span> <i class='fa-solid fa-lock text-base'></i>";
+                    } else {
+                        finishBtn.innerHTML = "<span>请先完成第3页所有的题目与连线 ✏️</span> <i class='fa-solid fa-lock text-base'></i>";
+                    }
+                    finishBtn.disabled = true;
+                }
+            }
+        }
+
+        function checkFinalCompletion() {
+            playSound('win');
+            const certModal = document.getElementById('cert-modal');
+            if (certModal) certModal.classList.remove('hidden');
+        }
+        window.checkFinalCompletion = checkFinalCompletion;
+
+        // 全挑战重置
+        function restartFullChallenge() {
+            playSound('click');
+            resetGame();
+            gameState.quiz = {
+                q1: null,
+                q2: null,
+                matchedPairs: []
+            };
+            gameState.hasFailedOnce = false; 
+            gameState.gameBeaten = false; // 重启时重锁证书
+            
+            const qElements = ['q1-A', 'q1-B', 'q2-A', 'q2-B'];
+            qElements.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.className = "quiz-btn w-full text-left text-sm md:text-base p-4 rounded-xl border border-slate-200 hover:bg-slate-50 transition-all font-bold flex justify-between items-center";
+                    const iconSpan = el.querySelector('.feedback-icon');
+                    if (iconSpan) iconSpan.innerHTML = '';
+                }
+            });
+
+            const quizStatus = document.getElementById('quiz-status');
+            const certModal = document.getElementById('cert-modal');
+            if (quizStatus) quizStatus.classList.add('hidden');
+            if (certModal) certModal.classList.add('hidden');
+            
+            switchPage(1);
+        }
+        window.restartFullChallenge = restartFullChallenge;
+
+        // 页面启动自动初始化
+        window.onload = function() {
+            renderGame();
+        };
+    </script>
+<div onclick="window.location.href='index.html';" style="position: fixed; bottom: 24px; right: 24px; z-index: 2147483647; background: white; border: 4px solid #8b5cf6; color: #6d28d9; font-family: 'Noto Sans SC', sans-serif; font-weight: 900; font-size: 16px; padding: 12px 24px; border-radius: 50px; box-shadow: 0 10px 25px rgba(139,92,246,0.3); transition: transform 0.2s; cursor: pointer; pointer-events: auto;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+        🏠 返回选关大厅
+    </div>
+</body>
+</html>

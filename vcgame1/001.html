@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>太空小怪兽的零食飞船 - 趣味逻辑过河游戏</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Nunito:wght@400;700;900&display=swap');
+        
+        body {
+            font-family: 'Nunito', 'ZCOOL KuaiLe', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #1e1b4b 0%, #311042 40%, #1e293b 100%);
+            overflow-x: hidden;
+        }
+
+        /* 飞船尺寸：自适应放大，保障操作体验 */
+        #spaceshipContainer {
+            width: 140px;
+        }
+        @media (min-width: 768px) {
+            #spaceshipContainer {
+                width: 160px;
+            }
+        }
+
+        /* 飘动的梦幻星星背景 */
+        .stars {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            background-image: 
+                radial-gradient(2px 2px at 20px 30px, #fff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 40px 70px, #fff, rgba(0,0,0,0)),
+                radial-gradient(3px 3px at 50px 160px, #fef08a, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 90px 40px, #fff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 130px 80px, #bae6fd, rgba(0,0,0,0)),
+                radial-gradient(3px 3px at 160px 120px, #fff, rgba(0,0,0,0));
+            background-repeat: repeat;
+            background-size: 200px 200px;
+            animation: starsMove 80s linear infinite;
+            opacity: 0.7;
+        }
+
+        @keyframes starsMove {
+            from { background-position: 0 0; }
+            to { background-position: 1000px 500px; }
+        }
+
+        /* 浮动动画 */
+        .floating {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-8px) rotate(1.5deg); }
+        }
+
+        /* 飞船平移 */
+        .ship-transition {
+            transition: left 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* 危险报警呼吸效果 */
+        .danger-pulse {
+            animation: pulse-red 1.5s infinite;
+        }
+        @keyframes pulse-red {
+            0%, 100% { box-shadow: 0 0 0 0px rgba(239, 68, 68, 0.8); }
+            50% { box-shadow: 0 0 0 12px rgba(239, 68, 68, 0); }
+        }
+
+        /* 页面切换过渡 */
+        .fade-in {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="min-h-screen text-slate-100 relative flex flex-col justify-between py-6 px-4 select-none">
+    <div class="stars"></div>
+
+    <!-- 🌟 全局顶部标题栏 -->
+    <header class="relative z-10 w-full max-w-5xl mx-auto text-center flex flex-col items-center px-4 mb-4">
+        <div class="flex items-center gap-4">
+            <span class="text-4xl md:text-5xl">🚀</span>
+            <h1 class="text-4xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-pink-300 to-cyan-300 tracking-wider drop-shadow-md">
+                太空萌宠过河记
+            </h1>
+            <span class="text-4xl md:text-5xl">👾</span>
+        </div>
+    </header>
+
+    <!-- ────────────────────────────── 【页面一：规则与故事绘本页】 ────────────────────────────── -->
+    <div id="tutorialPage" style="display: flex;" class="relative z-10 w-full max-w-4xl mx-auto flex-1 flex flex-col justify-center items-center px-4 fade-in">
+        <div class="bg-indigo-950/80 backdrop-blur-md border-2 border-indigo-500/50 p-8 md:p-12 rounded-[32px] shadow-[0_0_30px_rgba(99,102,241,0.3)] w-full text-center">
+            
+            <span class="text-6xl md:text-7xl block mb-6 floating">🧑‍🚀</span>
+            <h2 class="text-3xl md:text-4xl font-black text-yellow-300 mb-6 tracking-wide">星际基地任务简报</h2>
+            
+            <p class="text-slate-100 text-lg md:text-2xl leading-relaxed max-w-2xl mx-auto mb-8 font-semibold">
+                宇航员<span class="text-cyan-300 font-extrabold">小波</span>在太空搜集到了美味的<span class="text-yellow-300 font-extrabold">神奇糖果🍬</span>，还收养了可爱的<span class="text-pink-300 font-extrabold">太空猫咪🐱</span>和威武的<span class="text-emerald-300 font-extrabold">霸王龙宝宝🦖</span>。现在他要开飞船把他们全部运回地球！
+            </p>
+
+            <!-- 规则列表 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-left max-w-3xl mx-auto mb-10">
+                <!-- 限制 1 -->
+                <div class="bg-indigo-900/60 p-6 md:p-7 rounded-2xl border-l-4 border-cyan-400 shadow-md">
+                    <span class="text-cyan-300 text-lg md:text-xl font-black flex items-center gap-2 mb-2">
+                        <i class="fa-solid fa-rocket"></i> 载重限制
+                    </span>
+                    <p class="text-base md:text-lg text-slate-100 leading-relaxed font-medium">
+                        飞船座位很小。<strong>除了司机小波之外，每次只能再多载一个宠物或一袋糖果！</strong>
+                    </p>
+                </div>
+                <!-- 限制 2 -->
+                <div class="bg-indigo-900/60 p-6 md:p-7 rounded-2xl border-l-4 border-pink-400 shadow-md">
+                    <span class="text-pink-300 text-lg md:text-xl font-black flex items-center gap-2 mb-2">
+                        <i class="fa-solid fa-cat"></i> 萌宠冲突
+                    </span>
+                    <p class="text-base md:text-lg text-slate-100 leading-relaxed font-medium">
+                        小波不在场时：
+                        <br><span class="text-red-400 font-extrabold">❌ 霸王龙 ＋ 猫咪</span>：威猛的霸王龙🦖会吓跑太空猫咪🐱！
+                    </p>
+                </div>
+                <!-- 限制 3 -->
+                <div class="bg-indigo-900/60 p-6 md:p-7 rounded-2xl border-l-4 border-yellow-400 shadow-md">
+                    <span class="text-yellow-300 text-lg md:text-xl font-black flex items-center gap-2 mb-2">
+                        <i class="fa-solid fa-candy-cane"></i> 贪吃警报
+                    </span>
+                    <p class="text-base md:text-lg text-slate-100 leading-relaxed font-medium">
+                        小波不在场时：
+                        <br><span class="text-red-400 font-extrabold">❌ 猫咪 ＋ 糖果</span>：贪吃的太空猫咪🐱会把神奇糖果🍬全偷吃掉！
+                    </p>
+                </div>
+                <!-- 限制 4 -->
+                <div class="bg-indigo-900/60 p-6 md:p-7 rounded-2xl border-l-4 border-emerald-400 shadow-md">
+                    <span class="text-emerald-300 text-lg md:text-xl font-black flex items-center gap-2 mb-2">
+                        <i class="fa-solid fa-heart"></i> 安全组合
+                    </span>
+                    <p class="text-base md:text-lg text-slate-100 leading-relaxed font-medium">
+                        <span class="text-emerald-300 font-extrabold">💚 霸王龙 ＋ 糖果</span>：霸王龙对糖果不感兴趣，它们两个单独呆在一起非常安全。
+                    </p>
+                </div>
+            </div>
+
+            <!-- 开始游戏大按钮 -->
+            <button onclick="switchPage('game')" class="bg-gradient-to-r from-yellow-400 via-amber-400 to-orange-400 hover:brightness-110 text-slate-950 font-black text-2xl px-12 py-5 rounded-[20px] shadow-[0_10px_20px_rgba(234,179,8,0.3)] transition transform active:scale-95">
+                 进入航道 开始冒险！ <i class="fa-solid fa-chevron-right ml-1"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- ────────────────────────────── 【页面二：核心游戏体验页（放大版）】 ────────────────────────────── -->
+    <div id="gamePage" style="display: none;" class="relative z-10 w-full max-w-6xl mx-auto flex-1 flex flex-col justify-between gap-6 my-2 px-2 fade-in">
+        
+        <!-- 精美游戏主舞台 -->
+        <section class="w-full bg-indigo-950/70 backdrop-blur-md border-2 border-indigo-500/40 p-6 md:p-8 rounded-[36px] flex flex-col justify-between relative overflow-hidden min-h-[500px] md:min-h-[560px] shadow-[0_15px_30px_rgba(0,0,0,0.3)]">
+            
+            <!-- 状态信息条（修复点：完美嵌入动态 statusTip 状态展示区域） -->
+            <div class="flex flex-col lg:flex-row gap-4 justify-between items-center bg-indigo-900/90 px-6 py-4 rounded-[24px] border border-indigo-500/30 relative z-20">
+                <div class="flex flex-wrap gap-6 items-center justify-center lg:justify-start">
+                    <div class="text-base md:text-lg">
+                        <span class="text-indigo-200">运输步数：</span>
+                        <span id="stepCount" class="font-extrabold text-yellow-300 text-2xl">0</span>
+                    </div>
+                    <div class="text-base md:text-lg border-l border-indigo-500/30 pl-6">
+                        <span class="text-indigo-200">位置：</span>
+                        <span id="shipLocation" class="font-extrabold text-cyan-300">星际基地 (左岸)</span>
+                    </div>
+                    
+                    <!-- 💡 实时状态提醒器（完美注入，杜绝 null pointer 崩溃） -->
+                    <div class="text-base md:text-lg border-l border-indigo-500/30 pl-6">
+                        <span id="statusTip" class="text-emerald-400 font-extrabold tracking-wide transition-all duration-300">
+                            🟢 一切安全，请选择载客。
+                        </span>
+                    </div>
+                </div>
+
+                <!-- 交互按钮组 -->
+                <div class="flex gap-3">
+                    <button onclick="openRulesModal()" class="bg-gradient-to-r from-amber-400 to-yellow-500 hover:brightness-110 text-slate-950 font-black text-sm px-4 py-2 rounded-xl shadow-md transition transform active:scale-95 flex items-center gap-1.5 animate-bounce">
+                        <i class="fa-solid fa-gift"></i> 任务锦囊 (规则)
+                    </button>
+                    <button onclick="openTutorialModal()" class="bg-indigo-800 hover:bg-indigo-700 text-yellow-300 font-bold text-sm px-4 py-2 rounded-xl border border-indigo-500/40 transition">
+                        <i class="fa-solid fa-lightbulb"></i> 答案解析
+                    </button>
+                    <button onclick="switchPage('tutorial')" class="bg-indigo-950/80 hover:bg-indigo-900 text-indigo-300 font-bold text-sm px-4 py-2 rounded-xl border border-indigo-500/20 transition">
+                        <i class="fa-solid fa-arrow-left"></i> 返回主页
+                    </button>
+                </div>
+            </div>
+
+            <!-- 主河道大舞台 -->
+            <div id="gameStage" class="relative flex-1 grid grid-cols-3 gap-4 my-6 items-stretch min-h-[320px]">
+                
+                <!-- 左岸：星际发射基地 -->
+                <div class="bg-indigo-900/30 border-2 border-dashed border-indigo-400/50 rounded-3xl p-4 flex flex-col justify-between items-center relative z-20 shadow-inner">
+                    <div class="absolute top-2.5 left-4 text-xs md:text-sm font-black text-indigo-300 uppercase tracking-wider">🌟 基地 (起点)</div>
+                    
+                    <!-- 乘客停靠区 -->
+                    <div id="leftBank" class="w-full flex-1 flex flex-col justify-center items-center gap-4 mt-6">
+                        <!-- 动态生成的卡片 -->
+                    </div>
+                    
+                    <div class="w-full text-center text-xs text-indigo-200/70 bg-indigo-950/80 py-2 rounded-xl mt-2 font-bold">
+                        小家伙们在这
+                    </div>
+                </div>
+
+                <!-- 中间航道 -->
+                <div class="relative flex flex-col justify-center items-center pointer-events-none">
+                    <div class="absolute w-full h-1 border-t-2 border-dashed border-cyan-400/30 top-1/2 left-0 -translate-y-1/2 z-0"></div>
+                </div>
+
+                <!-- 右岸：地球家园 -->
+                <div class="bg-emerald-950/30 border-2 border-dashed border-emerald-400/50 rounded-3xl p-4 flex flex-col justify-between items-center relative z-20 shadow-inner">
+                    <div class="absolute top-2.5 right-4 text-xs md:text-sm font-black text-emerald-300 uppercase tracking-wider">🌍 地球 (终点)</div>
+                    
+                    <!-- 乘客停靠区 -->
+                    <div id="rightBank" class="w-full flex-1 flex flex-col justify-center items-center gap-4 mt-6">
+                        <!-- 动态生成的卡片 -->
+                    </div>
+                    
+                    <div class="w-full text-center text-xs text-emerald-200/70 bg-emerald-950/80 py-2 rounded-xl mt-2 font-bold">
+                        在这里汇合
+                    </div>
+                </div>
+
+                <!-- 🚀 飞船容器 -->
+                <div id="spaceshipContainer" class="ship-transition absolute flex flex-col items-center z-30 floating" style="top: 15%;">
+                    <div class="relative flex flex-col items-center">
+                        <div class="w-28 h-28 md:w-32 md:h-32 bg-gradient-to-b from-cyan-400/30 to-indigo-500/40 rounded-full border-2 border-cyan-300/80 flex flex-col items-center justify-center p-2 relative shadow-[0_0_20px_rgba(34,211,238,0.4)]">
+                            
+                            <!-- 宇航员小波固定在飞船上 -->
+                            <div class="text-3xl md:text-4xl z-10" title="小波(司机)">🧑‍🚀</div>
+                            
+                            <!-- 飞船副驾驶空位 -->
+                            <div id="shipCargo" class="w-12 h-12 md:w-14 md:h-14 bg-slate-950/80 rounded-xl border-2 border-dashed border-slate-500 flex items-center justify-center text-3xl mt-1.5 transition-all duration-200 cursor-pointer">
+                                <!-- 动态放置乘客 -->
+                            </div>
+
+                            <div class="absolute -bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5">
+                                <span class="w-2 h-4 bg-orange-500 rounded-full animate-bounce"></span>
+                                <span class="w-2.5 h-5 bg-yellow-400 rounded-full animate-pulse"></span>
+                                <span class="w-2 h-4 bg-orange-500 rounded-full animate-bounce" style="animation-delay: 0.2s"></span>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-slate-800 text-slate-200 text-xs font-black px-4 py-1.5 rounded-full border border-slate-600 shadow-lg mt-2 tracking-wider">
+                            🚀 小波号飞船
+                        </div>
+                    </div>
+
+                    <!-- 飞船控制按钮 -->
+                    <div class="flex gap-2 mt-4">
+                        <button id="btnGo" onclick="launchSpaceship()" class="bg-gradient-to-r from-yellow-400 to-amber-500 hover:brightness-110 text-slate-950 font-extrabold text-sm md:text-base px-6 py-2.5 rounded-2xl shadow-lg active:scale-95 transition-transform duration-100">
+                            <i class="fa-solid fa-play mr-0.5"></i> 起航出发!
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- 控制面板底部说明 -->
+            <div class="flex justify-between items-center bg-indigo-950/80 p-4 rounded-2xl border border-indigo-500/20 text-xs md:text-sm text-slate-300 relative z-20">
+                <div class="flex items-center gap-1.5">
+                    <span class="text-base">💡</span>
+                    <span><strong>玩法：</strong>点击物品载入飞船，点击“起航出发”，到岸后点击飞船物品卸货。</span>
+                </div>
+                <button onclick="resetGame()" class="text-red-400 hover:text-red-300 font-extrabold flex items-center gap-1 transition">
+                    <i class="fa-solid fa-rotate-left"></i> 重新开始
+                </button>
+            </div>
+
+        </section>
+
+    </div>
+
+    <!-- 底部版权栏 -->
+    <footer class="relative z-10 text-center py-3 text-xs text-indigo-300/40 border-t border-indigo-900 max-w-4xl mx-auto w-full">
+        太空小怪兽的零食飞船逻辑游戏 &copy; 专属设计（适合6-10岁儿童逻辑思维启蒙）
+    </footer>
+
+    <!-- ────────────────────────────── 【弹窗组】 ────────────────────────────── -->
+
+    <!-- 🔮 弹窗一：全新「任务锦囊」规则小窗口 -->
+    <div id="rulesModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-indigo-900 border-2 border-indigo-500/80 max-w-md w-full rounded-[28px] p-6 shadow-[0_20px_40px_rgba(0,0,0,0.5)] relative">
+            <h3 class="text-2xl font-black text-yellow-300 mb-4 flex items-center gap-2">
+                📜 任务锦囊 (规则)
+            </h3>
+            
+            <div class="space-y-4 text-sm md:text-base text-slate-100 leading-relaxed">
+                <div class="p-3 bg-indigo-950/60 rounded-xl border-l-4 border-cyan-400">
+                    <strong>乘坐限制：</strong>除了小波司机，飞船一次<strong>只能再多载一个</strong>乘客。
+                </div>
+                <div class="p-3 bg-red-950/60 rounded-xl border-l-4 border-red-500">
+                    <strong>危险警报：(当小波不在场时)</strong>
+                    <br>❌ 🦖 ＋ 🐱：霸王龙会吓跑猫咪！
+                    <br>❌ 🐱 ＋ 🍬：猫咪会偷吃糖果！
+                </div>
+                <div class="p-3 bg-emerald-950/60 rounded-xl border-l-4 border-emerald-400">
+                    <strong>安全组合：</strong>
+                    <br>💚 🦖 ＋ 🍬：霸王龙对糖果不感兴趣，呆在一起非常安全！
+                </div>
+            </div>
+
+            <button onclick="closeRulesModal()" class="mt-6 w-full bg-gradient-to-r from-yellow-400 to-amber-500 text-slate-950 font-black py-3 rounded-xl hover:brightness-110 transition active:scale-95 text-base shadow-md">
+                关闭锦囊，继续冒险！
+            </button>
+        </div>
+    </div>
+
+    <!-- 🏆 弹窗二：过关/失败状态弹窗 -->
+    <div id="gameModal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-indigo-900 border-2 border-indigo-500 max-w-md w-full rounded-[28px] p-6 text-center shadow-2xl relative overflow-hidden">
+            <div id="modalGlow" class="absolute -top-12 -left-12 w-32 h-32 bg-cyan-500/20 rounded-full blur-3xl"></div>
+            
+            <div id="modalIcon" class="text-6xl mb-4 floating">🎉</div>
+            <h3 id="modalTitle" class="text-2xl md:text-3xl font-black mb-3 text-yellow-300">恭喜通关！</h3>
+            <p id="modalContent" class="text-slate-200 text-sm md:text-base mb-6 leading-relaxed">
+                你太棒了！用最少的步数完成了这项逻辑挑战，小波和他的萌宠们都非常感谢你！
+            </p>
+            
+            <div class="flex flex-col gap-2.5">
+                <button id="modalPrimaryBtn" onclick="closeModal()" class="w-full bg-gradient-to-r from-cyan-400 to-indigo-500 text-white font-bold py-3.5 rounded-xl hover:brightness-110 transition active:scale-95 shadow-md text-base">
+                    继续挑战
+                </button>
+                <button onclick="closeModal(); openTutorialModal();" class="text-xs text-indigo-300 hover:text-indigo-200 py-1 transition font-bold">
+                    查看这道题的答案和解析 &rarr;
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🗺️ 弹窗三：答案与解析秘籍弹窗 -->
+    <div id="tutorialModal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-indigo-900 border-2 border-indigo-500 max-w-xl w-full rounded-[28px] p-6 shadow-2xl overflow-y-auto max-h-[90vh]">
+            <h3 class="text-2xl font-black text-yellow-300 mb-4 flex items-center gap-2">
+                🚀 《太空萌宠过河记》通关秘籍
+            </h3>
+            
+            <div class="space-y-4 text-sm md:text-base text-slate-100">
+                <div class="p-4 bg-indigo-950/80 rounded-2xl border border-emerald-500/30">
+                    <h4 class="font-bold text-emerald-400 text-base md:text-lg mb-2"><span class="text-base">✅</span> 正确步骤答案 (最少 7 步)：</h4>
+                    <p class="leading-relaxed text-xs md:text-sm text-slate-300 mb-3 font-medium">
+                        核心逻辑：当运送第2个物品过去时，必须<strong>“把之前运过去的带回来一个”</strong>，以防止留下的两个产生冲突！
+                    </p>
+                    <ol class="list-decimal list-inside space-y-2 font-mono text-cyan-200 text-xs md:text-sm bg-indigo-950/80 p-3.5 rounded-xl">
+                        <li>运送 <strong class="text-white">太空猫咪🐱</strong> 去地球。（把恐龙和糖果安全留在起点）</li>
+                        <li>空飞船回来。</li>
+                        <li>运送 <strong class="text-white">霸王龙🦕</strong> 去地球。</li>
+                        <li>把 <strong class="text-white">太空猫咪🐱</strong> 运回来（防止猫咪被霸王龙大吼吓跑）。</li>
+                        <li>运送 <strong class="text-white">神奇糖果🍬</strong> 去地球。（把猫咪安全留在起点）</li>
+                        <li>空飞船回来。</li>
+                        <li>运送 <strong class="text-white">太空猫咪🐱</strong> 去地球。🎉 <strong>通关！</strong></li>
+                    </ol>
+                </div>
+
+                <div class="p-4 bg-indigo-950/80 rounded-2xl border border-red-500/30">
+                    <h4 class="font-bold text-red-400 text-base md:text-lg mb-2"><span class="text-base">❌</span> 常见错误走法：</h4>
+                    <ul class="list-disc list-inside space-y-2 text-xs md:text-sm text-slate-300">
+                        <li>
+                            <strong class="text-white">错误一：第一步运送糖果🍬或霸王龙🦕</strong>
+                            <br><span class="text-red-300">&rarr; 结果：</span>如果第一步把糖果运走，起点会剩下“恐龙和猫咪”，恐龙会吓跑猫咪；如果第一步把恐龙运走，起点会剩下“猫咪和糖果”，嘴馋的猫咪会把糖果吃掉。
+                        </li>
+                        <li>
+                            <strong class="text-white">错误二：第三步运送恐龙去对岸，且将它 and 猫咪留在对岸</strong>
+                            <br><span class="text-red-300">&rarr; 结果：</span>当小波准备开飞船回起点时，在对岸的霸王龙会瞬间吓跑太空猫咪。这就是为什么小波必须“把太空猫咪捎带带回来”！
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="mt-6">
+                <button onclick="closeTutorialModal()" class="w-full bg-indigo-800 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl transition text-base shadow-md">
+                    我明白了，去挑战！
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 游戏核心逻辑 Javascript -->
+    <script>
+        const STATE = {
+            left: ['CAT', 'DINO', 'CANDY'],
+            right: [],
+            ship: [],
+            shipPosition: 'left',
+            steps: 0,
+            isGameOver: false
+        };
+
+        const ITEMS = {
+            CAT: { id: 'CAT', name: '太空猫咪', emoji: '🐱', desc: '喜欢偷吃糖果', color: 'from-pink-500 to-rose-600', border: 'border-pink-400' },
+            DINO: { id: 'DINO', name: '霸王龙', emoji: '🦖', desc: '会吓跑小猫咪', color: 'from-emerald-500 to-teal-600', border: 'border-emerald-400' },
+            CANDY: { id: 'CANDY', name: '太空糖果', emoji: '🍬', desc: '猫咪的最爱', color: 'from-amber-400 to-orange-500', border: 'border-amber-300' }
+        };
+
+        const leftBankEl = document.getElementById('leftBank');
+        const rightBankEl = document.getElementById('rightBank');
+        const shipCargoEl = document.getElementById('shipCargo');
+        const spaceshipContainer = document.getElementById('spaceshipContainer');
+        const stepCountEl = document.getElementById('stepCount');
+        const shipLocationEl = document.getElementById('shipLocation');
+        const statusTipEl = document.getElementById('statusTip');
+        const btnGoEl = document.getElementById('btnGo');
+
+        const tutorialPage = document.getElementById('tutorialPage');
+        const gamePage = document.getElementById('gamePage');
+
+        const gameModal = document.getElementById('gameModal');
+        const modalIcon = document.getElementById('modalIcon');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalContent = document.getElementById('modalContent');
+        const modalPrimaryBtn = document.getElementById('modalPrimaryBtn');
+        const tutorialModal = document.getElementById('tutorialModal');
+        const rulesModal = document.getElementById('rulesModal');
+
+        function switchPage(page) {
+            if (page === 'tutorial') {
+                gamePage.style.setProperty('display', 'none', 'important');
+                tutorialPage.style.setProperty('display', 'flex', 'important');
+            } else {
+                tutorialPage.style.setProperty('display', 'none', 'important');
+                gamePage.style.setProperty('display', 'flex', 'important');
+                setTimeout(updateShipUI, 50);
+            }
+        }
+
+        function initGame() {
+            STATE.left = ['CAT', 'DINO', 'CANDY'];
+            STATE.right = [];
+            STATE.ship = [];
+            STATE.shipPosition = 'left';
+            STATE.steps = 0;
+            STATE.isGameOver = false;
+
+            render();
+            updateShipUI();
+        }
+
+        function render() {
+            stepCountEl.innerText = STATE.steps;
+            shipLocationEl.innerText = STATE.shipPosition === 'left' ? '星际基地 (左岸)' : '地球家园 (右岸)';
+
+            leftBankEl.innerHTML = '';
+            STATE.left.forEach(itemId => {
+                leftBankEl.appendChild(createItemCard(itemId, 'left'));
+            });
+
+            rightBankEl.innerHTML = '';
+            STATE.right.forEach(itemId => {
+                rightBankEl.appendChild(createItemCard(itemId, 'right'));
+            });
+
+            shipCargoEl.innerHTML = '';
+            if (STATE.ship.length > 0) {
+                const itemId = STATE.ship[0];
+                const item = ITEMS[itemId];
+                
+                const cargoCard = document.createElement('div');
+                cargoCard.className = `w-12 h-12 md:w-14 md:h-14 rounded-xl bg-gradient-to-br ${item.color} flex flex-col items-center justify-center text-3xl cursor-pointer hover:scale-105 active:scale-95 transition shadow-lg relative group z-40`;
+                cargoCard.innerHTML = `
+                    <span>${item.emoji}</span>
+                    <span class="absolute -top-10 bg-slate-900 text-xs text-white px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap z-50">上岸</span>
+                `;
+                cargoCard.onclick = (e) => {
+                    e.stopPropagation();
+                    unloadCargo();
+                };
+                shipCargoEl.appendChild(cargoCard);
+            } else {
+                shipCargoEl.innerHTML = `<span class="text-sm text-slate-400 font-black">+</span>`;
+            }
+
+            checkGameRules();
+        }
+
+        function createItemCard(itemId, bank) {
+            const item = ITEMS[itemId];
+            const card = document.createElement('div');
+            
+            card.className = `w-full max-w-[140px] p-2.5 md:p-4 rounded-2xl bg-gradient-to-br ${item.color} border-2 ${item.border} flex flex-col items-center justify-center text-center shadow-lg cursor-pointer hover:scale-105 active:scale-95 transition-transform duration-200 relative group`;
+            card.innerHTML = `
+                <div class="text-4xl md:text-5xl">${item.emoji}</div>
+                <div class="text-sm md:text-base font-black text-slate-950 mt-1.5">${item.name}</div>
+                <span class="absolute -top-10 bg-slate-900 text-xs text-white px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap z-50">载入飞船</span>
+            `;
+
+            card.onclick = () => {
+                if (STATE.isGameOver) return;
+                loadCargo(itemId, bank);
+            };
+
+            return card;
+        }
+
+        function loadCargo(itemId, bank) {
+            if (STATE.shipPosition !== bank) {
+                showTemporaryStatus('🚀 飞船不在这边哦！先开过来吧。', 'text-amber-400');
+                return;
+            }
+            if (STATE.ship.length > 0) {
+                showTemporaryStatus('⚠️ 飞船没有空座位了！一次只能载一个。', 'text-amber-400');
+                return;
+            }
+
+            if (bank === 'left') {
+                STATE.left = STATE.left.filter(id => id !== itemId);
+            } else {
+                STATE.right = STATE.right.filter(id => id !== itemId);
+            }
+
+            STATE.ship.push(itemId);
+            render();
+            showTemporaryStatus(`✨ ${ITEMS[itemId].name} 已经坐好，可以出发了。`, 'text-cyan-400');
+        }
+
+        function unloadCargo() {
+            if (STATE.isGameOver || STATE.ship.length === 0) return;
+
+            const itemId = STATE.ship.pop();
+            const bank = STATE.shipPosition;
+
+            if (bank === 'left') {
+                STATE.left.push(itemId);
+            } else {
+                STATE.right.push(itemId);
+            }
+
+            render();
+            showTemporaryStatus(`📥 ${ITEMS[itemId].name} 安全下船啦。`, 'text-emerald-400');
+        }
+
+        function launchSpaceship() {
+            if (STATE.isGameOver) return;
+
+            btnGoEl.disabled = true;
+            btnGoEl.innerHTML = `<i class="fa-solid fa-circle-notch animate-spin mr-1.5"></i> 航行中...`;
+            btnGoEl.className = "bg-slate-700 text-slate-400 font-bold text-xs md:text-sm px-5 py-2.5 rounded-xl shadow-lg cursor-not-allowed";
+
+            STATE.shipPosition = STATE.shipPosition === 'left' ? 'right' : 'left';
+            STATE.steps++;
+
+            updateShipUI();
+
+            setTimeout(() => {
+                btnGoEl.disabled = false;
+                btnGoEl.innerHTML = `<i class="fa-solid fa-play mr-0.5"></i> 起航出发!`;
+                btnGoEl.className = "bg-gradient-to-r from-yellow-400 to-amber-500 text-slate-950 font-black text-xs md:text-sm px-5 py-2.5 rounded-xl shadow-lg hover:brightness-110 active:scale-95 transition pointer-events-auto";
+                render();
+            }, 1200);
+        }
+
+        function updateShipUI() {
+            if (gamePage.style.display === 'none') return;
+
+            const isMobile = window.innerWidth < 768;
+            const offset = isMobile ? 70 : 80;
+
+            if (STATE.shipPosition === 'left') {
+                spaceshipContainer.style.left = `calc(33.33% - ${offset}px)`;
+            } else {
+                spaceshipContainer.style.left = `calc(66.66% - ${offset}px)`;
+            }
+        }
+
+        function checkGameRules() {
+            const boPosition = STATE.shipPosition;
+
+            if (boPosition !== 'left') {
+                const leftSet = new Set(STATE.left);
+                if (leftSet.has('CAT') && leftSet.has('CANDY')) {
+                    triggerGameOver(
+                        '🐱 猫咪把糖果偷吃啦！',
+                        '哎呀！小波开走飞船后，留在起点的【太空猫咪🐱】嘴巴太馋了，把无人看守的【神奇糖果🍬】全部偷吃掉啦！运输失败。',
+                        '🐱'
+                    );
+                    return;
+                }
+                if (leftSet.has('DINO') && leftSet.has('CAT')) {
+                    triggerGameOver(
+                        '🙀 猫咪被吓跑了！',
+                        '不好了！小波离开起点后，威猛的【霸王龙🦖】大吼一声，把胆小的【太空猫咪🐱】直接吓跑了！小萌宠跑丢了。',
+                        '🐱'
+                    );
+                    return;
+                }
+            }
+
+            if (boPosition !== 'right') {
+                const rightSet = new Set(STATE.right);
+                if (rightSet.has('CAT') && rightSet.has('CANDY')) {
+                    triggerGameOver(
+                        '🐱 猫咪把糖果偷吃啦！',
+                        '呜呀！小波飞回起点后，留在地球的【太空猫咪🐱】大口大口地把【神奇糖果🍬】吃光了！运输没有成功。',
+                        '🐱'
+                    );
+                    return;
+                }
+                if (rightSet.has('DINO') && rightSet.has('CAT')) {
+                    triggerGameOver(
+                        '🙀 猫咪被吓跑了！',
+                        '糟糕！小波离开地球后，【霸王龙🦖】走过来打招呼，直接把不适应地球的【太空猫咪🐱】吓跑了！',
+                        '🐱'
+                    );
+                    return;
+                }
+            }
+
+            if (STATE.right.length === 3 && STATE.ship.length === 0) {
+                triggerGameWin();
+            }
+        }
+
+        function triggerGameOver(title, message, emoji) {
+            STATE.isGameOver = true;
+            statusTipEl.innerText = '🔴 发生冲突，运输失败！';
+            statusTipEl.className = "text-base font-bold text-red-500 danger-pulse";
+
+            setTimeout(() => {
+                modalIcon.innerText = emoji;
+                modalTitle.innerText = title;
+                modalTitle.className = "text-2xl md:text-3xl font-black mb-3 text-red-400";
+                modalContent.innerText = message;
+                modalPrimaryBtn.innerText = "重试一次";
+                modalPrimaryBtn.className = "w-full bg-gradient-to-r from-red-500 to-rose-600 text-white font-bold py-3.5 rounded-xl hover:brightness-110 transition active:scale-95 shadow-md text-base";
+                
+                gameModal.classList.remove('hidden');
+            }, 300);
+        }
+
+        function triggerGameWin() {
+            STATE.isGameOver = true;
+            statusTipEl.innerText = '🎉 任务圆满成功！';
+            statusTipEl.className = "text-base font-bold text-emerald-400";
+
+            setTimeout(() => {
+                modalIcon.innerText = '🏆';
+                modalTitle.innerText = "星际小英雄通关！";
+                modalTitle.className = "text-2xl md:text-3xl font-black mb-3 text-yellow-300";
+                
+                let comment = '';
+                if (STATE.steps === 7) {
+                    comment = `你用最完美的步骤（7步最优解）通过了考验！你是个真正的超级逻辑大师！⭐`;
+                } else {
+                    comment = `恭喜你用 ${STATE.steps} 步成功把它们全部送达！试一试能不能在 7 步内完成它？💪`;
+                }
+                
+                modalContent.innerText = comment;
+                modalPrimaryBtn.innerText = "重新玩一局";
+                modalPrimaryBtn.className = "w-full bg-gradient-to-r from-emerald-400 to-teal-500 text-white font-bold py-3.5 rounded-xl hover:brightness-110 transition active:scale-95 shadow-md text-base";
+                
+                gameModal.classList.remove('hidden');
+            }, 300);
+        }
+
+        function showTemporaryStatus(text, colorClass) {
+            statusTipEl.innerText = text;
+            statusTipEl.className = `text-base font-bold ${colorClass}`;
+        }
+
+        function resetGame() {
+            initGame();
+        }
+
+        function closeModal() {
+            gameModal.classList.add('hidden');
+            if (STATE.isGameOver) {
+                resetGame();
+            }
+        }
+
+        function openTutorialModal() {
+            tutorialModal.classList.remove('hidden');
+        }
+
+        function closeTutorialModal() {
+            tutorialModal.classList.add('hidden');
+        }
+
+        function openRulesModal() {
+            rulesModal.classList.remove('hidden');
+        }
+
+        function closeRulesModal() {
+            rulesModal.classList.add('hidden');
+        }
+
+        window.addEventListener('resize', updateShipUI);
+
+        window.onload = function() {
+            switchPage('tutorial');
+            initGame();
+        };
+    </script>
+<div onclick="window.location.href='index.html';" style="position: fixed; bottom: 24px; right: 24px; z-index: 2147483647; background: white; border: 4px solid #8b5cf6; color: #6d28d9; font-family: 'Noto Sans SC', sans-serif; font-weight: 900; font-size: 16px; padding: 12px 24px; border-radius: 50px; box-shadow: 0 10px 25px rgba(139,92,246,0.3); transition: transform 0.2s; cursor: pointer; pointer-events: auto;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+        🏠 返回选关大厅
+    </div>
+</body>
+</html>
