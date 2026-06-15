@@ -274,25 +274,7 @@
         const STAGES = { STORY: 0, LOGIC: 1, QUIZ: 2, SUCCESS: 3 };
         let currentStageState = STAGES.STORY;
 
-        // 核心修复：全平台语音引擎与 iOS 解锁逻辑
-        let preferredVoice = null;
         let audioUnlocked = false;
-
-        function initVoices() {
-            if (!('speechSynthesis' in window)) return;
-            let voices = window.speechSynthesis.getVoices();
-            if (voices.length > 0) {
-                preferredVoice = voices.find(v => v.name.includes('Samantha') || v.name.includes('Google US English') || v.name.includes('Zira')) 
-                              || voices.find(v => v.lang === 'en-US'); 
-            }
-        }
-        
-        if ('speechSynthesis' in window) {
-            initVoices();
-            if (window.speechSynthesis.onvoiceschanged !== undefined) {
-                window.speechSynthesis.onvoiceschanged = initVoices;
-            }
-        }
 
         function unlockAudioAndGoToLogic() {
             if (!audioUnlocked && 'speechSynthesis' in window) {
@@ -319,13 +301,30 @@
         window.speakWord = function(word) {
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
-                // 核心修复：遇到中文拦截静音
-                if (/[\u4e00-\u9fa5]/.test(word)) return; 
-                const utterance = new SpeechSynthesisUtterance(word);
+                
+                // 1. 过滤掉所有 Emoji，防止引擎念出奇怪的表情符号描述
+                let cleanWord = word.replace(/[\u{1F600}-\u{1F6FF}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F700}-\u{1F77F}\u{1F780}-\u{1F7FF}\u{1F800}-\u{1F8FF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}\u{1FAB0}-\u{1FABF}\u{1FAC0}-\u{1FACF}\u{1FAD0}-\u{1FADF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{2300}-\u{23FF}]/gu, '').trim();
+
+                // 2. 核心拦截：遇到中文直接静音
+                if (/[\u4e00-\u9fa5]/.test(cleanWord)) return; 
+                if (!cleanWord) return;
+
+                const utterance = new SpeechSynthesisUtterance(cleanWord);
                 utterance.lang = 'en-US';
-                utterance.rate = 0.85;  
-                utterance.pitch = 1.2; 
-                if (preferredVoice) utterance.voice = preferredVoice;
+                
+                // 3. 恢复标准人声！去除之前导致失真变音的 rate=0.85 和 pitch=1.2
+                utterance.rate = 1.0;  
+                utterance.pitch = 1.0; 
+                
+                // 4. 实时动态优选英语库，确保加载完毕并防串台
+                let voices = window.speechSynthesis.getVoices();
+                let englishVoice = voices.find(v => v.name.includes('Samantha') || v.name.includes('Google US English') || v.name.includes('Zira') || v.name.includes('Daniel') || v.name.includes('Karen')) 
+                                || voices.find(v => v.lang.startsWith('en'));
+
+                if (englishVoice) {
+                    utterance.voice = englishVoice;
+                }
+
                 window.speechSynthesis.speak(utterance);
             } else {
                 showToast("设备不支持语音朗读");
