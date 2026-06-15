@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>小熊救援大冒险</title>
+    <!-- 引入 Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Nunito:wght@400;700;900&display=swap');
@@ -15,6 +16,7 @@
             -webkit-user-select: none;
         }
 
+        /* 按钮按压动画 */
         .jelly-btn {
             transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
@@ -22,6 +24,7 @@
             transform: scale(0.95) translateY(4px);
         }
 
+        /* 点读卡交互动画 */
         .word-card {
             transition: transform 0.15s ease, box-shadow 0.15s ease;
             cursor: pointer;
@@ -30,6 +33,7 @@
             transform: scale(0.92);
         }
 
+        /* 轻缓可爱的漂浮动画 */
         @keyframes gentle-bounce {
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-4%); }
@@ -38,6 +42,7 @@
             animation: gentle-bounce 3.5s ease-in-out infinite;
         }
 
+        /* 3D立体亚克力积木质感 */
         .block-3d {
             box-shadow: inset 0 4px 0 rgba(255, 255, 255, 0.5), 0 6px 0 rgba(0, 0, 0, 0.2);
             transition: transform 0.1s ease-out, box-shadow 0.1s ease-out;
@@ -50,6 +55,7 @@
 </head>
 <body class="min-h-screen flex flex-col items-center justify-between p-4 overflow-x-hidden relative">
 
+    <!-- 顶部导航栏 -->
     <header class="w-full max-w-5xl flex items-center justify-between z-10 py-3.5 px-6 bg-white/80 backdrop-blur-md rounded-2xl border-4 border-white shadow-xl mb-4">
         <div class="flex items-center space-x-3">
             <span class="text-4xl animate-gentle-bounce">🐻</span>
@@ -61,8 +67,10 @@
         </div>
     </header>
 
+    <!-- 核心舞台区 -->
     <main class="w-full max-w-5xl flex-grow flex items-center justify-center z-10 my-2 pb-16">
         
+        <!-- ==================== 第一关：绘本故事 ==================== -->
         <section id="stage-story" class="w-full">
             <div class="bg-white border-4 border-sky-300 p-6 md:p-10 rounded-[3rem] shadow-2xl relative overflow-hidden">
                 <div class="flex items-center space-x-3 mb-6 border-b-2 border-sky-100 pb-4">
@@ -75,9 +83,13 @@
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                    
+                    <!-- 左侧：视觉画面 (完美居中戴正的蓝色棒球帽) -->
                     <div class="lg:col-span-4 flex flex-col items-center justify-center bg-sky-50 rounded-[2rem] border-4 border-dashed border-sky-200 p-8 relative">
                         <div class="relative w-48 h-48 flex items-center justify-center animate-gentle-bounce">
+                            <!-- 熊 -->
                             <span class="text-[8rem] select-none filter drop-shadow-md">🐻</span>
+                            <!-- 蓝色棒球帽 -->
                             <span class="absolute top-0 left-1/2 -translate-x-1/2 mt-1 text-[4.5rem] z-10 pointer-events-none drop-shadow-lg select-none">🧢</span>
                         </div>
                         <div class="mt-2 flex items-center text-sky-600 bg-white px-4 py-2 rounded-2xl shadow-sm border border-sky-100 font-bold text-sm">
@@ -85,6 +97,7 @@
                         </div>
                     </div>
 
+                    <!-- 右侧：文本区 -->
                     <div class="lg:col-span-8 text-xl text-sky-950 font-bold leading-[2.5]">
                         <p class="indent-8 mb-4">
                             在一个阳光灿烂的早晨，小熊 
@@ -120,8 +133,7 @@
                 </div>
 
                 <div class="mt-10 flex justify-center">
-                    <!-- 核心修复：确保调用 unlockAudioAndGoToLogic 以解锁 iOS 音频权限 -->
-                    <button onclick="unlockAudioAndGoToLogic()" class="jelly-btn group flex items-center px-12 py-5 font-black text-white bg-green-500 hover:bg-green-400 rounded-full text-2xl shadow-[0_8px_0_rgb(21,128,61)] border-b-2 border-green-300">
+                    <button onclick="switchStage('logic')" class="jelly-btn group flex items-center px-12 py-5 font-black text-white bg-green-500 hover:bg-green-400 rounded-full text-2xl shadow-[0_8px_0_rgb(21,128,61)] border-b-2 border-green-300">
                         去帮小熊推木块 
                         <svg class="w-8 h-8 ml-2 group-hover:translate-x-2 transition-transform" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
@@ -131,6 +143,8 @@
             </div>
         </section>
 
+
+        <!-- ==================== 第二关：华容道游戏 (真实逻辑验证版) ==================== -->
         <section id="stage-logic" class="w-full hidden">
             <div class="flex flex-col items-center">
                 
@@ -144,31 +158,48 @@
                     </div>
                 </div>
 
+                <!-- 严谨的3D游戏托盘 -->
                 <div class="relative w-full max-w-[360px] aspect-[4/5] bg-sky-800 rounded-[1.5rem] border-[10px] border-sky-900 p-2 overflow-hidden touch-none shadow-[0_20px_40px_rgba(3,105,161,0.4)]">
+                    
+                    <!-- 物理底层网格 -->
                     <div id="grid-background" class="absolute inset-2 z-0 flex flex-wrap pointer-events-none border-t border-l border-sky-700/50 rounded-lg overflow-hidden bg-sky-900/40"></div>
                     
-                    <div class="absolute bottom-0 left-[25%] w-[50%] h-[50px] bg-gradient-to-t from-amber-400/60 to-amber-300/10 border-t-[3px] border-amber-400 rounded-t-2xl z-20 flex flex-col justify-end items-center pb-1 shadow-[0_0_25px_rgba(251,191,36,0.8)] cursor-pointer group pointer-events-auto" onclick="speakWord('Honey')">
+                    <!-- 底部发光的蜂蜜出口槽 -->
+                    <div class="absolute bottom-0 left-[25%] w-[50%] h-[50px] bg-gradient-to-t from-amber-400/60 to-amber-300/10 border-t-[3px] border-amber-400 rounded-t-2xl z-20 flex flex-col justify-end items-center pb-1 shadow-[0_0_25px_rgba(251,191,36,0.8)] cursor-pointer group pointer-events-auto" onclick="if(!isAutoPlaying) speakWord('Honey')">
                         <span class="text-3xl animate-bounce group-hover:scale-110 transition-transform mb-1">🍯</span>
                         <span class="text-amber-900 font-black text-[11px] tracking-widest bg-white/80 px-2 rounded-full mt-1 shadow-sm uppercase">Honey</span>
                     </div>
 
-                    <div id="game-board" class="absolute inset-2 z-10 pointer-events-none"></div>
+                    <!-- 滑块逻辑渲染区 -->
+                    <div id="game-board" class="absolute inset-2 z-10 pointer-events-none">
+                        <!-- JS动态渲染超精美的3D滑块 -->
+                    </div>
                 </div>
 
                 <div class="flex items-center justify-between space-x-3 mt-6 w-full max-w-[380px]">
                     <div class="bg-amber-50 border-2 border-amber-200 text-amber-800 px-3 py-2 rounded-xl text-xs md:text-sm font-bold shadow flex-1">
                         💡 把小熊正下方的障碍物拨开吧！
                     </div>
-                    <!-- 核心修复：文字版重置按钮 -->
-                    <button onclick="resetLogicGame()" class="jelly-btn flex items-center justify-center px-4 py-3 bg-white text-rose-500 rounded-xl shadow-lg border-4 border-rose-100 hover:bg-rose-50 shrink-0 group">
-                        <span class="font-black group-active:scale-95 transition-transform">🔄 重置</span>
+                    <!-- 看答案自动演示按钮 -->
+                    <button onclick="showLogicAnswer()" class="jelly-btn flex items-center justify-center px-4 py-3 bg-white text-emerald-500 rounded-xl shadow-lg border-4 border-emerald-100 hover:bg-emerald-50 shrink-0 group">
+                        <span class="font-black group-active:scale-95 transition-transform">👀 答案</span>
+                    </button>
+                    <!-- 刷新重置按钮 -->
+                    <button onclick="resetLogicGame()" class="jelly-btn flex items-center justify-center p-3 bg-white text-rose-500 rounded-xl shadow-lg border-4 border-rose-100 hover:bg-rose-50 shrink-0">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 8H17.5"></path>
+                        </svg>
                     </button>
                 </div>
             </div>
         </section>
 
+
+        <!-- ==================== 第三关：智慧大冲关 ==================== -->
         <section id="stage-quiz" class="w-full hidden">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+                
+                <!-- 【左分栏：绘本小课本】 -->
                 <div class="lg:col-span-4 bg-white/95 border-4 border-teal-300 p-6 rounded-[2.5rem] shadow-xl flex flex-col">
                     <div class="flex items-center space-x-2 border-b-2 border-teal-100 pb-3 mb-4">
                         <span class="text-2xl">📖</span>
@@ -187,6 +218,7 @@
                     </div>
                 </div>
 
+                <!-- 【右分栏：智慧大冲关题卡】 -->
                 <div class="lg:col-span-8 bg-white/95 border-4 border-indigo-300 p-6 md:p-8 rounded-[2.5rem] shadow-2xl flex flex-col justify-between">
                     <div>
                         <div class="flex items-center justify-between mb-6 border-b-4 border-dashed border-indigo-100 pb-4">
@@ -199,18 +231,24 @@
                             </div>
                         </div>
 
+                        <!-- 题目内容 -->
                         <div class="mb-8">
                             <h3 id="question-text" class="text-lg md:text-xl text-slate-800 font-black leading-relaxed">
                                 加载问题中...
                             </h3>
                         </div>
 
-                        <div id="quiz-options" class="space-y-4"></div>
+                        <!-- 答案选项列表 -->
+                        <div id="quiz-options" class="space-y-4">
+                            <!-- 动态生成选项 -->
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
 
+
+        <!-- ==================== 终点：成功通关 ==================== -->
         <section id="stage-success" class="w-full hidden">
             <div class="bg-white/95 border-4 border-amber-300 p-8 md:p-12 rounded-[3rem] shadow-2xl text-center relative overflow-hidden flex flex-col items-center">
                 <div id="stars-row" class="flex justify-center gap-4 mb-6"></div>
@@ -227,30 +265,38 @@
                 </button>
             </div>
         </section>
+
     </main>
 
+    <!-- 底部固定进度与导航条 -->
     <footer id="progress-bar-container" class="fixed bottom-0 left-0 right-0 w-full bg-white/90 backdrop-blur-md px-6 py-4 shadow-[0_-5px_20px_rgba(0,0,0,0.05)] border-t-2 border-white z-50 flex items-center justify-between">
+        
+        <!-- 左侧：返回上一关按钮 (支持自由切关) -->
         <div class="w-24 md:w-32">
             <button id="btn-prev-stage" onclick="goPrevStage()" class="hidden jelly-btn bg-sky-50 border-2 border-sky-200 text-sky-700 px-4 py-2 rounded-full text-sm md:text-base font-black shadow-sm flex items-center gap-1">
                 <span>⬅️</span> <span class="hidden sm:inline">返回</span>
             </button>
         </div>
         
+        <!-- 中间：进度点 -->
         <div class="flex items-center space-x-3 justify-center">
             <div id="dot-story" class="h-3 w-10 bg-amber-400 rounded-full border border-amber-500 transition-all duration-300"></div>
             <div id="dot-logic" class="h-3 w-3 bg-slate-300 rounded-full transition-all duration-300"></div>
             <div id="dot-quiz" class="h-3 w-3 bg-slate-300 rounded-full transition-all duration-300"></div>
         </div>
 
+        <!-- 右侧：占位 -->
         <div class="w-24 md:w-32 text-right">
             <span class="font-black text-sky-800 text-sm hidden sm:inline">探险进度</span>
         </div>
     </footer>
 
+    <!-- 统一消息吐司组件 -->
     <div id="toast" class="fixed top-20 left-1/2 transform -translate-x-1/2 bg-slate-800/95 text-white font-extrabold px-6 py-3 rounded-2xl shadow-xl z-50 text-center opacity-0 pointer-events-none transition-all duration-300 border-2 border-slate-600">
         提示内容
     </div>
 
+    <!-- 成功解救小熊的弹窗 -->
     <div id="logic-win-modal" class="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center hidden">
         <div class="bg-white border-8 border-green-400 p-8 rounded-[2.5rem] shadow-2xl flex flex-col items-center text-center max-w-sm mx-4 transform scale-90 transition-all duration-300">
             <div class="text-7xl mb-4 animate-bounce">🐻🎉</div>
@@ -274,63 +320,85 @@
         const STAGES = { STORY: 0, LOGIC: 1, QUIZ: 2, SUCCESS: 3 };
         let currentStageState = STAGES.STORY;
 
-        let audioUnlocked = false;
+        // 第二关：严格恢复早期的 6 积木华容道经典布局
+        const LOGIC_INITIAL_BLOCKS = [
+            { id: 'hero', w: 2, h: 2, x: 1, y: 0, type: 'hero', color: 'bg-gradient-to-b from-amber-200 to-amber-400 border border-amber-300 text-amber-900', content: '🐻 BEAR' },
+            { id: 'v1', w: 1, h: 2, x: 0, y: 0, type: 'wood', color: 'bg-gradient-to-b from-emerald-300 to-emerald-500 border border-emerald-400 text-emerald-950', content: '🌲 TREE' },
+            { id: 'v2', w: 1, h: 2, x: 3, y: 0, type: 'wood', color: 'bg-gradient-to-b from-emerald-300 to-emerald-500 border border-emerald-400 text-emerald-950', content: '🌲 TREE' },
+            { id: 'h1', w: 2, h: 1, x: 1, y: 2, type: 'wood', color: 'bg-gradient-to-b from-rose-300 to-rose-500 border border-rose-400 text-rose-950', content: '🪵 WOOD' },
+            { id: 's1', w: 1, h: 1, x: 0, y: 2, type: 'wood', color: 'bg-gradient-to-b from-violet-300 to-violet-500 border border-violet-400 text-violet-950', content: '🪨 ROCK' },
+            { id: 's2', w: 1, h: 1, x: 3, y: 2, type: 'wood', color: 'bg-gradient-to-b from-violet-300 to-violet-500 border border-violet-400 text-violet-950', content: '🪨 ROCK' }
+        ];
+        let logicBlocks = [];
+        let steps = 0;
+        let gameFinished = false;
+        let autoPlayTimer = null;
+        let isAutoPlaying = false;
 
-        function unlockAudioAndGoToLogic() {
-            if (!audioUnlocked && 'speechSynthesis' in window) {
-                const silentUtterance = new SpeechSynthesisUtterance(" ");
-                silentUtterance.volume = 0;
-                silentUtterance.rate = 10;
-                window.speechSynthesis.speak(silentUtterance);
-                audioUnlocked = true;
+        // 第三关：选项全量匹配专属颜色和 Emoji
+        const QUIZ_QUESTIONS = [
+            {
+                question: "【阅读理解】故事里说，危险降临时，小熊（Bear）头上正戴着什么？",
+                options: [
+                    "<span class='text-blue-600 font-extrabold'>🧢 蓝色棒球帽</span>", 
+                    "<span class='text-yellow-500 font-extrabold'>👑 金色皇冠</span>", 
+                    "<span class='text-slate-800 font-extrabold'>🎩 黑色大礼帽</span>"
+                ],
+                optionSpeeches: ["Blue cap", "Gold crown", "Black hat"],
+                answer: 0
+            },
+            {
+                question: "【词汇互动】在第二关的迷阵中，挡住小熊出路的横向红色积木代表哪个英文单词？",
+                options: ["🪵 Wood (木块)", "🚪 Exit (出口)", "🌲 Forest (森林)"],
+                optionSpeeches: ["Wood", "Exit", "Forest"],
+                answer: 0
+            },
+            {
+                question: "【词汇互动】挡在红色木块两旁的紫色小积木，代表哪个单词？",
+                options: ["🌲 Tree (树木)", "🪨 Rock (岩石)", "🌿 Grass (小草)"],
+                optionSpeeches: ["Tree", "Rock", "Grass"],
+                answer: 1
+            },
+            {
+                question: "【听力匹配】小熊说，只要吃上一口最喜爱的食物它就充满力量。是哪一种？",
+                options: ["🍎 Apple (苹果)", "🌶️ Pepper (辣椒)", "🍯 Honey (蜂蜜)"],
+                optionSpeeches: ["Apple", "Pepper", "Honey"],
+                answer: 2
+            },
+            {
+                question: "【词义翻译】小熊逃出的发光终点是“Exit”，它在汉语中是什么意思？",
+                options: ["🚪 出口", "🌲 森林", "🐻 小熊"],
+                optionSpeeches: ["Exit", "Forest", "Bear"],
+                answer: 0
             }
-            switchStage('logic');
+        ];
+        let currentQuestionIdx = 0;
+        let selectedOption = null;
+        let correctCount = 0;
+        let currentQuestionFailed = false; 
+        let touchStartRef = null;
+
+        // ==================== 语音引擎初始化 (重点修复部分) ====================
+        let englishVoice = null;
+
+        function initVoices() {
+            const voices = window.speechSynthesis.getVoices();
+            // 优先筛选高品质的内置原生英文女声（如 Mac 的 Samantha，安卓的 Google 语音），更适合小朋友
+            englishVoice = voices.find(v => v.lang === 'en-US' && (v.name.includes('Samantha') || v.name.includes('Google') || v.name.includes('Siri'))) 
+                        || voices.find(v => v.lang === 'en-US') 
+                        || voices.find(v => v.lang.includes('en'));
         }
 
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            toast.innerText = message;
-            toast.classList.remove('opacity-0', 'pointer-events-none');
-            toast.classList.add('opacity-100', 'translate-y-[-10px]');
-            setTimeout(() => {
-                toast.classList.remove('opacity-100', 'translate-y-[-10px]');
-                toast.classList.add('opacity-0', 'pointer-events-none');
-            }, 2500);
-        }
-
-        window.speakWord = function(word) {
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel();
-                
-                // 1. 过滤掉所有 Emoji，防止引擎念出奇怪的表情符号描述
-                let cleanWord = word.replace(/[\u{1F600}-\u{1F6FF}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F700}-\u{1F77F}\u{1F780}-\u{1F7FF}\u{1F800}-\u{1F8FF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}\u{1FAB0}-\u{1FABF}\u{1FAC0}-\u{1FACF}\u{1FAD0}-\u{1FADF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{2300}-\u{23FF}]/gu, '').trim();
-
-                // 2. 核心拦截：遇到中文直接静音
-                if (/[\u4e00-\u9fa5]/.test(cleanWord)) return; 
-                if (!cleanWord) return;
-
-                const utterance = new SpeechSynthesisUtterance(cleanWord);
-                utterance.lang = 'en-US';
-                
-                // 3. 恢复标准人声！去除之前导致失真变音的 rate=0.85 和 pitch=1.2
-                utterance.rate = 1.0;  
-                utterance.pitch = 1.0; 
-                
-                // 4. 实时动态优选英语库，确保加载完毕并防串台
-                let voices = window.speechSynthesis.getVoices();
-                let englishVoice = voices.find(v => v.name.includes('Samantha') || v.name.includes('Google US English') || v.name.includes('Zira') || v.name.includes('Daniel') || v.name.includes('Karen')) 
-                                || voices.find(v => v.lang.startsWith('en'));
-
-                if (englishVoice) {
-                    utterance.voice = englishVoice;
-                }
-
-                window.speechSynthesis.speak(utterance);
-            } else {
-                showToast("设备不支持语音朗读");
+        // 监听并加载语音库（专门解决安卓和 Mac 首次加载无声或发音错乱的问题）
+        if ('speechSynthesis' in window) {
+            initVoices();
+            // Chrome 和 Safari 需要依靠 onvoiceschanged 来确保语音包异步加载完成
+            if (speechSynthesis.onvoiceschanged !== undefined) {
+                speechSynthesis.onvoiceschanged = initVoices;
             }
         }
 
+        // --- 视图切换与导航 ---
         function switchStage(stageName) {
             document.getElementById('stage-story').classList.add('hidden');
             document.getElementById('stage-logic').classList.add('hidden');
@@ -387,20 +455,45 @@
             else if (currentStageState === STAGES.QUIZ) switchStage('logic');
         }
 
-        const LOGIC_INITIAL_BLOCKS = [
-            { id: 'hero', w: 2, h: 2, x: 1, y: 0, type: 'hero', color: 'bg-gradient-to-b from-amber-200 to-amber-400 border border-amber-300 text-amber-900', content: '🐻 BEAR' },
-            { id: 'v1', w: 1, h: 2, x: 0, y: 0, type: 'wood', color: 'bg-gradient-to-b from-emerald-300 to-emerald-500 border border-emerald-400 text-emerald-950', content: '🌲 TREE' },
-            { id: 'v2', w: 1, h: 2, x: 3, y: 0, type: 'wood', color: 'bg-gradient-to-b from-emerald-300 to-emerald-500 border border-emerald-400 text-emerald-950', content: '🌲 TREE' },
-            { id: 'h1', w: 2, h: 1, x: 1, y: 2, type: 'wood', color: 'bg-gradient-to-b from-rose-300 to-rose-500 border border-rose-400 text-rose-950', content: '🪵 WOOD' },
-            { id: 's1', w: 1, h: 1, x: 0, y: 2, type: 'wood', color: 'bg-gradient-to-b from-violet-300 to-violet-500 border border-violet-400 text-violet-950', content: '🪨 ROCK' },
-            { id: 's2', w: 1, h: 1, x: 3, y: 2, type: 'wood', color: 'bg-gradient-to-b from-violet-300 to-violet-500 border border-violet-400 text-violet-950', content: '🪨 ROCK' }
-        ];
-        let logicBlocks = [];
-        let steps = 0;
-        let gameFinished = false;
-        let touchStartRef = null;
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.innerText = message;
+            toast.classList.remove('opacity-0', 'pointer-events-none');
+            toast.classList.add('opacity-100', 'translate-y-[-10px]');
+            setTimeout(() => {
+                toast.classList.remove('opacity-100', 'translate-y-[-10px]');
+                toast.classList.add('opacity-0', 'pointer-events-none');
+            }, 2500);
+        }
 
+        window.speakWord = function(word) {
+            if ('speechSynthesis' in window) {
+                // 先停止当前可能正在播放的语音
+                window.speechSynthesis.cancel(); 
+                
+                const utterance = new SpeechSynthesisUtterance(word);
+                
+                // 强制指定基础语言
+                utterance.lang = 'en-US';
+                utterance.rate = 0.85;  // 稍微放慢，方便孩子听清
+                utterance.pitch = 1.2;  // 稍微提高音调，听起来更生动
+                
+                // 【关键修复】：如果找到了纯正的英文语音包，强制绑定，防止设备乱用中文引擎读英文
+                if (englishVoice) {
+                    utterance.voice = englishVoice;
+                }
+
+                window.speechSynthesis.speak(utterance);
+            } else {
+                showToast("当前设备或浏览器不支持语音朗读");
+            }
+        }
+
+        // --- 第二关：完美匹配的网格系统与严格物理碰撞 ---
         function resetLogicGame() {
+            if (autoPlayTimer) clearInterval(autoPlayTimer);
+            isAutoPlaying = false;
+
             logicBlocks = JSON.parse(JSON.stringify(LOGIC_INITIAL_BLOCKS));
             steps = 0;
             gameFinished = false;
@@ -418,6 +511,7 @@
             renderGameBoard();
         }
 
+        // 核心修复：优先严格检查物理碰撞
         function checkCollision(x1, y1, w1, h1, x2, y2, w2, h2) {
             return x1 < x2 + w2 && x1 + w1 > x2 && y1 < y2 + h2 && y1 + h1 > y2;
         }
@@ -430,8 +524,10 @@
             const newX = blockToMove.x + dx;
             const newY = blockToMove.y + dy;
 
+            // 1. 边界检测
             if (newX < 0 || newX + blockToMove.w > 4 || newY < 0 || newY + blockToMove.h > 5) return;
 
+            // 2. 严格的阻挡检测 (修复了之前跨越木块的BUG)
             let hit = false;
             for (const other of logicBlocks) {
                 if (other.id !== id && checkCollision(newX, newY, blockToMove.w, blockToMove.h, other.x, other.y, other.w, other.h)) {
@@ -440,6 +536,7 @@
                 }
             }
 
+            // 3. 只有在没有任何阻挡时，才允许移动
             if (!hit) {
                 blockToMove.x = newX;
                 blockToMove.y = newY;
@@ -447,12 +544,52 @@
                 document.getElementById('steps-counter').innerText = steps;
                 renderGameBoard();
                 
+                // 4. 移动成功后才检查是否到达终点
                 if (id === 'hero' && newX === 1 && newY === 3) {
                     checkVictory();
                 }
             }
         }
 
+        // 全新录制的 15 步自动解谜连招 (完美破解经典的6块阵)
+        function showLogicAnswer() {
+            if (isAutoPlaying || gameFinished) return;
+            resetLogicGame(); 
+            isAutoPlaying = true;
+            showToast("正在自动演示完美通关步骤...");
+
+            const autoSteps = [
+                {id: 's1', dx: 0, dy: 1}, {id: 's1', dx: 0, dy: 1},
+                {id: 's2', dx: 0, dy: 1}, {id: 's2', dx: -1, dy: 0}, {id: 's2', dx: 0, dy: 1},
+                {id: 'v1', dx: 0, dy: 1}, {id: 'v1', dx: 0, dy: 1},
+                {id: 'v2', dx: 0, dy: 1}, {id: 'v2', dx: 0, dy: 1}, {id: 'v2', dx: 0, dy: 1},
+                {id: 'hero', dx: -1, dy: 0},
+                {id: 'h1', dx: 1, dy: 0}, {id: 'h1', dx: 0, dy: -1}, {id: 'h1', dx: 0, dy: -1},
+                {id: 'v2', dx: 0, dy: -1}, {id: 'v2', dx: 0, dy: -1},
+                {id: 's2', dx: 1, dy: 0},
+                {id: 'v1', dx: 1, dy: 0}, {id: 'v1', dx: 1, dy: 0},
+                {id: 'hero', dx: 0, dy: 1}, {id: 'hero', dx: 0, dy: 1},
+                {id: 'h1', dx: -1, dy: 0}, {id: 'h1', dx: -1, dy: 0},
+                {id: 'v2', dx: 0, dy: -1},
+                {id: 'v1', dx: 0, dy: -1}, {id: 'v1', dx: 0, dy: -1},
+                {id: 'hero', dx: 1, dy: 0},
+                {id: 'hero', dx: 0, dy: 1}
+            ];
+
+            let stepIdx = 0;
+            autoPlayTimer = setInterval(() => {
+                if (stepIdx < autoSteps.length) {
+                    const step = autoSteps[stepIdx];
+                    attemptMove(step.id, step.dx, step.dy);
+                    stepIdx++;
+                } else {
+                    clearInterval(autoPlayTimer);
+                    isAutoPlaying = false;
+                }
+            }, 400); 
+        }
+
+        // 按步数分级夸奖
         function checkVictory() {
             gameFinished = true;
             let praiseWord = "Good";
@@ -499,7 +636,7 @@
                 el.appendChild(inner);
 
                 el.addEventListener('pointerdown', (e) => {
-                    if (gameFinished) return;
+                    if (gameFinished || isAutoPlaying) return;
                     el.setPointerCapture(e.pointerId);
                     inner.classList.add('active-drag');
                     touchStartRef = { startX: e.clientX, startY: e.clientY };
@@ -507,7 +644,7 @@
 
                 el.addEventListener('pointerup', (e) => {
                     inner.classList.remove('active-drag');
-                    if (gameFinished || !touchStartRef) return;
+                    if (gameFinished || isAutoPlaying || !touchStartRef) return;
                     const dx = e.clientX - touchStartRef.startX;
                     const dy = e.clientY - touchStartRef.startY;
                     const threshold = 30; 
@@ -516,6 +653,7 @@
                         if (Math.abs(dx) > Math.abs(dy)) attemptMove(block.id, dx > 0 ? 1 : -1, 0);
                         else attemptMove(block.id, 0, dy > 0 ? 1 : -1);
                     } else {
+                        // 点击积木发音
                         speakWord(block.content.split(' ')[1] || block.content);
                     }
                     touchStartRef = null;
@@ -526,47 +664,7 @@
             });
         }
 
-        const QUIZ_QUESTIONS = [
-            {
-                question: "【阅读理解】故事里说，危险降临时，小熊（Bear）头上正戴着什么？",
-                options: [
-                    "<span class='text-blue-600 font-extrabold'>🧢 蓝色棒球帽</span>", 
-                    "<span class='text-yellow-500 font-extrabold'>👑 金色皇冠</span>", 
-                    "<span class='text-slate-800 font-extrabold'>🎩 黑色大礼帽</span>"
-                ],
-                optionSpeeches: ["Blue cap", "Gold crown", "Black hat"],
-                answer: 0
-            },
-            {
-                question: "【词汇互动】在第二关的迷阵中，挡住小熊出路的横向红色积木代表哪个英文单词？",
-                options: ["🪵 Wood (木块)", "🚪 Exit (出口)", "🌲 Forest (森林)"],
-                optionSpeeches: ["Wood", "Exit", "Forest"],
-                answer: 0
-            },
-            {
-                question: "【词汇互动】挡在红色木块两旁的紫色小积木，代表哪个单词？",
-                options: ["🌲 Tree (树木)", "🪨 Rock (岩石)", "🌿 Grass (小草)"],
-                optionSpeeches: ["Tree", "Rock", "Grass"],
-                answer: 1
-            },
-            {
-                question: "【听力匹配】小熊说，只要吃上一口最喜爱的食物它就充满力量。是哪一种？",
-                options: ["🍎 Apple (苹果)", "🌶️ Pepper (辣椒)", "🍯 Honey (蜂蜜)"],
-                optionSpeeches: ["Apple", "Pepper", "Honey"],
-                answer: 2
-            },
-            {
-                question: "【词义翻译】小熊逃出的发光终点是“Exit”，它在汉语中是什么意思？",
-                options: ["🚪 出口", "🌲 森林", "🐻 小熊"],
-                optionSpeeches: ["Exit", "Forest", "Bear"],
-                answer: 0
-            }
-        ];
-        let currentQuestionIdx = 0;
-        let selectedOption = null;
-        let correctCount = 0;
-        let currentQuestionFailed = false; 
-
+        // --- 第三关：答错只变红、鼓励重新思考的不剧透交互 ---
         function startQuiz() {
             currentQuestionIdx = 0;
             correctCount = 0;
@@ -599,6 +697,7 @@
             if (clickedBtn.disabled || selectedOption === "done") return;
             const q = QUIZ_QUESTIONS[currentQuestionIdx];
 
+            // 无论对错，发音
             if (q.optionSpeeches && q.optionSpeeches[idx]) {
                 speakWord(q.optionSpeeches[idx]);
             }
@@ -609,9 +708,11 @@
                 selectedOption = "done"; 
                 if (!currentQuestionFailed) correctCount++;
 
+                // 自身变绿
                 clickedBtn.className = "w-full text-left p-4 rounded-3xl border-4 border-emerald-400 bg-emerald-100 text-emerald-800 shadow-inner font-bold text-lg md:text-xl flex justify-between items-center";
                 clickedBtn.innerHTML = `<span>${q.options[idx]}</span><span class="text-xl font-black text-emerald-600 animate-bounce">✓ 答对啦</span>`;
                 
+                // 禁用其余按钮
                 const options = document.getElementById('quiz-options').children;
                 for (let i = 0; i < options.length; i++) {
                     options[i].disabled = true;
@@ -628,6 +729,7 @@
                 }, 1500);
 
             } else {
+                // 答错仅变红禁用，绝不跳转，让孩子继续尝试选出正确答案
                 currentQuestionFailed = true; 
                 clickedBtn.disabled = true; 
                 clickedBtn.className = "w-full text-left p-4 rounded-3xl border-4 border-rose-400 bg-rose-100 text-rose-800 font-bold text-lg md:text-xl flex justify-between items-center";
@@ -635,6 +737,7 @@
             }
         }
 
+        // --- 通关结算 ---
         function renderSuccessScreen() {
             const starsRow = document.getElementById('stars-row');
             starsRow.innerHTML = '';
@@ -667,8 +770,7 @@
 
         window.onload = () => switchStage('story');
     </script>
-    
-    <div onclick="window.location.href='index.html';" style="position: fixed; bottom: 24px; right: 24px; z-index: 2147483647; background: white; border: 4px solid #8b5cf6; color: #6d28d9; font-family: 'Noto Sans SC', sans-serif; font-weight: 900; font-size: 16px; padding: 12px 24px; border-radius: 50px; box-shadow: 0 10px 25px rgba(139,92,246,0.3); transition: transform 0.2s; cursor: pointer; pointer-events: auto;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+<div onclick="window.location.href='index.html';" style="position: fixed; bottom: 24px; right: 24px; z-index: 2147483647; background: white; border: 4px solid #8b5cf6; color: #6d28d9; font-family: 'Noto Sans SC', sans-serif; font-weight: 900; font-size: 16px; padding: 12px 24px; border-radius: 50px; box-shadow: 0 10px 25px rgba(139,92,246,0.3); transition: transform 0.2s; cursor: pointer; pointer-events: auto;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
         🏠 返回选关大厅
     </div>
 </body>
